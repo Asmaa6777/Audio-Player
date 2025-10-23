@@ -49,6 +49,8 @@ private:
     void loadFile(const juce::File& file);
     void toggleMute();  // NEW: Mute toggle function
 
+    //void loadTrack(const juce::File& file);
+    std::unique_ptr<juce::FileChooser> fileChooser;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

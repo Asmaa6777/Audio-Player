@@ -669,6 +669,12 @@
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>Audio_\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\MainComponent.cpp">
+      <Filter>Audio_\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Main.cpp">
+      <Filter>Audio_\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\MainComponent.cpp">
       <Filter>Audio_\Source</Filter>
     </ClCompile>
@@ -1259,6 +1265,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_formats\juce_audio_formats.cpp">
       <Filter>JUCE Modules\juce_audio_formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_formats\juce_audio_formats.mm">
+      <Filter>JUCE Modules\juce_audio_formats</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_plugin_client\juce_audio_plugin_client_ARA.cpp">
+      <Filter>JUCE Modules\juce_audio_plugin_client</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_processors\format\juce_AudioPluginFormat.cpp">
       <Filter>JUCE Modules\juce_audio_processors\format</Filter>
@@ -3404,13 +3416,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\PlayerGUI.h">
-      <Filter>Audio_\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\AudioPlayer.h">
-      <Filter>Audio_\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\MainComponent.h">
+    <ClInclude Include="..\..\..\MainComponent.h">
       <Filter>Audio_\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_analytics\analytics\juce_Analytics.h">
