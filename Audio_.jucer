@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="vr7Fs8" name="Audio_" projectType="guiapp" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+<JUCERPROJECT id="vr7Fs8" name="Audio_" useAppConfig="0" addUsingNamespaceToJuceHeader="0"
+              jucerFormatVersion="1" projectType="guiapp">
   <MAINGROUP id="ulQ2jE" name="Audio_">
     <GROUP id="{B0D94052-9400-35CA-AD36-B5DFA38AD0A4}" name="Source">
-      <FILE id="UAO8i1" name="Main.cpp" compile="1" resource="0" file="../Main.cpp"/>
-      <FILE id="xcOeXw" name="MainComponent.cpp" compile="1" resource="0"
-            file="../MainComponent.cpp"/>
-      <FILE id="A2rBI0" name="MainComponent.h" compile="0" resource="0" file="../MainComponent.h"/>
+      <FILE id="IxUBmX" name="AudioGUI.cpp" compile="1" resource="0" file="Source/AudioGUI.cpp"/>
+      <FILE id="AVOhzO" name="AudioGUI.h" compile="0" resource="0" file="Source/AudioGUI.h"/>
+      <FILE id="TR6QbN" name="AudioPlayer.cpp" compile="1" resource="0" file="Source/AudioPlayer.cpp"/>
+      <FILE id="yL4UNz" name="AudioPlayer.h" compile="0" resource="0" file="Source/AudioPlayer.h"/>
+      <FILE id="Y6XWJg" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="yZSpCm" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+      <FILE id="qOMEkx" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>
@@ -15,8 +19,6 @@
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
-            useGlobalPath="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -38,7 +40,6 @@
         <MODULEPATH id="juce_audio_basics" path="../juce-8.0.10-windows/JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../juce-8.0.10-windows/JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../juce-8.0.10-windows/JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../juce-8.0.10-windows/JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../juce-8.0.10-windows/JUCE/modules"/>
         <MODULEPATH id="juce_core" path="../juce-8.0.10-windows/JUCE/modules"/>
