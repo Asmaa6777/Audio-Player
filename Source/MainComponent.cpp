@@ -170,5 +170,6 @@ void MainComponent::toggleMute()
         playerGUI.setVolumeLevel(previousVolume);  // Update slider to show restored volume
     }
 
+
     playerGUI.setMuteState(isMuted);
 }

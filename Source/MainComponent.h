@@ -3,12 +3,14 @@
 #include <JuceHeader.h>
 #include "PlayerGUI.h"
 
+
 class MainComponent : public juce::AudioAppComponent,
     public PlayerGUI::Listener
 {
 public:
     MainComponent();
     ~MainComponent() override;
+
 
     // Audio
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -46,6 +48,7 @@ private:
 
     void loadFile(const juce::File& file);
     void toggleMute();  // NEW: Mute toggle function
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

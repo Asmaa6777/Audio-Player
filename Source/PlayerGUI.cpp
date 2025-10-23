@@ -10,6 +10,7 @@
 
 #include "PlayerGUI.h"
 
+
 PlayerGUI::PlayerGUI()
 {
     // Configure buttons

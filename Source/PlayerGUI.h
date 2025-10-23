@@ -8,6 +8,7 @@ class PlayerGUI : public juce::Component,
 {
 public:
     // Listener interface for communication with parent
+
     class Listener
     {
     public:
