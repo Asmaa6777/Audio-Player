@@ -19,7 +19,6 @@ public:
         mainWindow = nullptr; // Clean up
     }
 
-
 private:
     // The main window of the app
     class MainWindow : public juce::DocumentWindow
@@ -31,9 +30,15 @@ private:
                 DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
-            setContentOwned(new MainComponent(), true); // MainComponent = our UI + logic
-            centreWithSize(400, 200);
+            setContentOwned(new MainComponent(), true);
+
+#if JUCE_IOS || JUCE_ANDROID
+            setFullScreen(true);
+#else
+            setResizable(true, true);
+            centreWithSize(600, 200);  // CHANGED: Updated window size
             setVisible(true);
+#endif
         }
 
         void closeButtonPressed() override

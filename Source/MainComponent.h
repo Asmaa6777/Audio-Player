@@ -1,12 +1,10 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include <vector>
-
+#include "PlayerGUI.h"
 
 class MainComponent : public juce::AudioAppComponent,
-    public juce::Button::Listener,
-    public juce::Slider::Listener
+    public PlayerGUI::Listener
 {
 public:
     MainComponent();
@@ -21,9 +19,14 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    // Event handlers
-    void buttonClicked(juce::Button* button) override;
-    void sliderValueChanged(juce::Slider* slider) override;
+    // PlayerGUI::Listener implementations
+    void loadButtonClicked() override;
+    void playButtonClicked() override;
+    void stopButtonClicked() override;
+    void restartButtonClicked() override;
+    void loopButtonClicked() override;
+    void muteButtonClicked() override;  // NEW: Mute button handler
+    void volumeChanged(float newVolume) override;
 
 private:
     // Audio
@@ -31,14 +34,18 @@ private:
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
 
-    // GUI Controls
-    juce::TextButton loadButton{ "Load Files" };
-    juce::TextButton restartButton{ "Restart" };
-    juce::TextButton stopButton{ "Stop" };
-    juce::Slider volumeSlider;
+    // GUI
+    PlayerGUI playerGUI;
 
-    //void loadTrack(const juce::File& file);
+    // File handling
     std::unique_ptr<juce::FileChooser> fileChooser;
+
+    // Mute functionality
+    bool isMuted = false;  // NEW: Mute state
+    float previousVolume = 0.5f;  // NEW: Store volume before mute
+
+    void loadFile(const juce::File& file);
+    void toggleMute();  // NEW: Mute toggle function
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
