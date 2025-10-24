@@ -17,7 +17,7 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
-    // GUI button callbacks
+   
     void loadButtonClicked() override;
     void playButtonClicked() override;
     void stopButtonClicked() override;

@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include <JuceHeader.h>
+
 
 class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
@@ -42,8 +43,8 @@ private:
     juce::TextButton playButton{ "Play" };
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton restartButton{ "Restart" };
-    juce::TextButton loopButton{ "Loop: OFF" };
-    juce::TextButton muteButton{ "Mute: OFF" };
+    juce::TextButton loopButton{ "Lopp off" };
+    juce::TextButton muteButton{ "Mute off" };
     juce::TextButton forwardButton{ ">> 10s" };
     juce::TextButton backwardButton{ "<< 10s" };
 
