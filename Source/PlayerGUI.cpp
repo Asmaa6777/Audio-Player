@@ -7,8 +7,8 @@ PlayerGUI::PlayerGUI()
     {
         button->addListener(this);
         addAndMakeVisible(button);
-        button->setColour(juce::TextButton::buttonColourId, juce::Colours::lightblue);
-        button->setColour(juce::TextButton::textColourOffId, juce::Colours::black);
+        button->setColour(juce::TextButton::buttonColourId, juce::Colours::purple);
+  
     }
 
     
@@ -31,7 +31,7 @@ PlayerGUI::~PlayerGUI() = default;
 
 void PlayerGUI::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(juce::Colours::silver);
     g.setColour(juce::Colours::lightblue);
     g.drawRect(getLocalBounds(), 1);
 }
@@ -80,7 +80,7 @@ void PlayerGUI::setLoopState(bool isLooping)
 {
     loopButton.setButtonText(isLooping ? "Loop on" : "Loop off");
     loopButton.setColour(juce::TextButton::buttonColourId,
-        isLooping ? juce::Colours::hotpink : juce::Colours::lightblue);
+        isLooping ? juce::Colours::hotpink : juce::Colours::purple);
 }
 
 void PlayerGUI::setPlaybackState(bool playing)
@@ -88,7 +88,7 @@ void PlayerGUI::setPlaybackState(bool playing)
     isPlaying = playing;
     playButton.setButtonText(playing ? "Pause" : "Play");
     playButton.setColour(juce::TextButton::buttonColourId,
-        playing ? juce::Colours::hotpink : juce::Colours::lightblue);
+        playing ? juce::Colours::hotpink : juce::Colours::purple);
 }
 
 void PlayerGUI::setVolumeLevel(float volume)
@@ -101,5 +101,5 @@ void PlayerGUI::setMuteState(bool isMutedNow)
     isMuted = isMutedNow;
     muteButton.setButtonText(isMuted ? "Mute on" : "Mute off");
     muteButton.setColour(juce::TextButton::buttonColourId,
-        isMuted ? juce::Colours::hotpink : juce::Colours::lightblue);
+        isMuted ? juce::Colours::hotpink : juce::Colours::purple);
 }
