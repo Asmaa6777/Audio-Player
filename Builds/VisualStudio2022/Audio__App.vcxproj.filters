@@ -663,13 +663,10 @@
     <ClCompile Include="..\..\Source\PlayerGUI.cpp">
       <Filter>Audio_\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\AudioPlayer.cpp">
+    <ClCompile Include="..\..\Source\PlayerAudio.cpp">
       <Filter>Audio_\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
-      <Filter>Audio_\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\MainComponent.cpp">
       <Filter>Audio_\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
@@ -1265,12 +1262,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_formats\juce_audio_formats.cpp">
       <Filter>JUCE Modules\juce_audio_formats</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_formats\juce_audio_formats.mm">
-      <Filter>JUCE Modules\juce_audio_formats</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_plugin_client\juce_audio_plugin_client_ARA.cpp">
-      <Filter>JUCE Modules\juce_audio_plugin_client</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_processors\format\juce_AudioPluginFormat.cpp">
       <Filter>JUCE Modules\juce_audio_processors\format</Filter>
@@ -3416,9 +3407,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\MainComponent.h">
-      <Filter>Audio_\Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_analytics\analytics\juce_Analytics.h">
       <Filter>JUCE Modules\juce_analytics\analytics</Filter>
     </ClInclude>
@@ -7325,6 +7313,9 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\PlayerGUI.h" />
+    <ClInclude Include="..\..\Source\PlayerAudio.h" />
+    <ClInclude Include="..\..\Source\MainComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_audio_devices\native\oboe\src\common\README.md">

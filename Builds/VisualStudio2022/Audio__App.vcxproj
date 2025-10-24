@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\PlayerGUI.cpp" />
-    <ClCompile Include="..\..\Source\AudioPlayer.cpp" />
+    <ClCompile Include="..\..\Source\PlayerAudio.cpp" />
     <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\Source\MainComponent.cpp" />
     <ClCompile Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_analytics\analytics\juce_Analytics.cpp">
@@ -2850,7 +2850,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PlayerGUI.h" />
-    <ClInclude Include="..\..\Source\AudioPlayer.h" />
+    <ClInclude Include="..\..\Source\PlayerAudio.h" />
     <ClInclude Include="..\..\Source\MainComponent.h" />
     <ClInclude Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_analytics\analytics\juce_Analytics.h" />
     <ClInclude Include="..\..\..\juce-8.0.10-windows\JUCE\modules\juce_analytics\analytics\juce_ButtonTracker.h" />

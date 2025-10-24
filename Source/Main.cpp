@@ -2,7 +2,6 @@
 #include "MainComponent.h"
 
 
-// Our application class
 class SimpleAudioPlayer : public juce::JUCEApplication
 {
 public:
@@ -11,17 +10,15 @@ public:
 
     void initialise(const juce::String&) override
     {
-        // Create and show the main window
         mainWindow = std::make_unique<MainWindow>(getApplicationName());
     }
 
     void shutdown() override
     {
-        mainWindow = nullptr; // Clean up
+        mainWindow = nullptr; 
     }
 
 private:
-    // The main window of the app
     class MainWindow : public juce::DocumentWindow
     {
     public:
@@ -37,7 +34,7 @@ private:
             setFullScreen(true);
 #else
             setResizable(true, true);
-            centreWithSize(600, 200);  // CHANGED: Updated window size
+            centreWithSize(600, 200);  
             setVisible(true);
 #endif
         }
