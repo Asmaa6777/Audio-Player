@@ -3,17 +3,15 @@ MainComponent::MainComponent()
 {
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
-    // Initialize audio channels: 0 inputs, 2 outputs (stereo)
+    
     setAudioChannels(0, 2);
-    // Set window size
-    setSize(700, 250);
+   
+    setSize(800, 250);
 }
 MainComponent::~MainComponent()
 {
     shutdownAudio();
-}
-//==============================================================================
-// Audio Callbacks
+} 
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     player.prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -26,8 +24,7 @@ void MainComponent::releaseResources()
 {
     player.releaseResources();
 }
-//==============================================================================
-// GUI
+ 
 void MainComponent::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey);
@@ -36,8 +33,7 @@ void MainComponent::resized()
 {
     playerGUI.setBounds(getLocalBounds());
 }
-//==============================================================================
-// Button Callbacks
+ 
 void MainComponent::loadButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
@@ -77,8 +73,7 @@ void MainComponent::muteButtonClicked()
 {
     toggleMute();
 }
-//==============================================================================
-// Volume and Mute
+
 void MainComponent::volumeChanged(float newVolume)
 {
     if (!isMuted)
@@ -101,15 +96,14 @@ void MainComponent::toggleMute()
     }
     playerGUI.setMuteState(isMuted);
 }
-//==============================================================================
-// Skip Controls
+ 
 void MainComponent::forwardButtonClicked()
 {
-    player.forward(10.0);  // Move forward by 10 seconds
+    player.forward(10.0);  
 }
 void MainComponent::backwardButtonClicked()
 {
-    player.backward(10.0);  // Move backward by 10 seconds
+    player.backward(10.0);  
 }
 void MainComponent::goToEndButtonClicked()
 {
