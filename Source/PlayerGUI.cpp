@@ -2,23 +2,21 @@
 
 PlayerGUI::PlayerGUI()
 {
-    
-    for (auto* button : { &loadButton, &playButton, &stopButton, &restartButton, &loopButton, &muteButton, &forwardButton, &backwardButton })
+    // Add all buttons
+    for (auto* button : { &loadButton, &playButton, &stopButton, &restartButton, &loopButton, &muteButton, &forwardButton, &backwardButton, &goToEndButton })
     {
         button->addListener(this);
         addAndMakeVisible(button);
-        button->setColour(juce::TextButton::buttonColourId, juce::Colours::purple);
-  
     }
 
-    
+    // Configure volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
     volumeSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
     addAndMakeVisible(volumeSlider);
 
-   
+    // Configure volume label
     volumeLabel.setJustificationType(juce::Justification::centredLeft);
     addAndMakeVisible(volumeLabel);
 
@@ -31,27 +29,35 @@ PlayerGUI::~PlayerGUI() = default;
 
 void PlayerGUI::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::silver);
-    g.setColour(juce::Colours::lightblue);
+    g.fillAll(juce::Colours::darkgrey);
+    g.setColour(juce::Colours::lightgrey);
     g.drawRect(getLocalBounds(), 1);
 }
 
 void PlayerGUI::resized()
 {
-    int y = 20;
-    int buttonWidth = 80;
-    int buttonHeight = 40;
+    auto area = getLocalBounds();
+    int buttonHeight = 30;
+    int margin = 8;
+    auto topRow = area.removeFromTop(buttonHeight + margin).reduced(margin);
 
-    loadButton.setBounds(20, y, 100, buttonHeight);
-    playButton.setBounds(140, y, buttonWidth, buttonHeight);
-    stopButton.setBounds(240, y, buttonWidth, buttonHeight);
-    restartButton.setBounds(340, y, buttonWidth, buttonHeight);
-    loopButton.setBounds(440, y, buttonWidth, buttonHeight);
-    muteButton.setBounds(540, y, buttonWidth, buttonHeight);
-    backwardButton.setBounds(640, y, buttonWidth, buttonHeight);
-    forwardButton.setBounds(740, y, buttonWidth, buttonHeight);
+    // Adjust button count to 9 (added goToEnd)
+    int buttonWidth = (topRow.getWidth() - (8 * margin)) / 9;
 
-    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+    loadButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    playButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    stopButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    restartButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    loopButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    muteButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    backwardButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    forwardButton.setBounds(topRow.removeFromLeft(buttonWidth)); topRow.removeFromLeft(margin);
+    goToEndButton.setBounds(topRow.removeFromLeft(buttonWidth));
+
+    auto bottomRow = area.reduced(margin);
+    auto labelArea = bottomRow.removeFromLeft(60);
+    volumeLabel.setBounds(labelArea);
+    volumeSlider.setBounds(bottomRow);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -66,6 +72,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &muteButton) listener->muteButtonClicked();
     else if (button == &forwardButton) listener->forwardButtonClicked();
     else if (button == &backwardButton) listener->backwardButtonClicked();
+    else if (button == &goToEndButton) listener->goToEndButtonClicked();
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -78,9 +85,9 @@ void PlayerGUI::setListener(Listener* newListener) { listener = newListener; }
 
 void PlayerGUI::setLoopState(bool isLooping)
 {
-    loopButton.setButtonText(isLooping ? "Loop on" : "Loop off");
+    loopButton.setButtonText(isLooping ? "Loop: ON" : "Loop: OFF");
     loopButton.setColour(juce::TextButton::buttonColourId,
-        isLooping ? juce::Colours::hotpink : juce::Colours::purple);
+        isLooping ? juce::Colours::hotpink : juce::Colours::lightblue);
 }
 
 void PlayerGUI::setPlaybackState(bool playing)
@@ -88,7 +95,7 @@ void PlayerGUI::setPlaybackState(bool playing)
     isPlaying = playing;
     playButton.setButtonText(playing ? "Pause" : "Play");
     playButton.setColour(juce::TextButton::buttonColourId,
-        playing ? juce::Colours::hotpink : juce::Colours::purple);
+        playing ? juce::Colours::hotpink : juce::Colours::lightblue);
 }
 
 void PlayerGUI::setVolumeLevel(float volume)
@@ -99,7 +106,7 @@ void PlayerGUI::setVolumeLevel(float volume)
 void PlayerGUI::setMuteState(bool isMutedNow)
 {
     isMuted = isMutedNow;
-    muteButton.setButtonText(isMuted ? "Mute on" : "Mute off");
+    muteButton.setButtonText(isMuted ? "Mute: ON" : "Mute: OFF");
     muteButton.setColour(juce::TextButton::buttonColourId,
-        isMuted ? juce::Colours::hotpink : juce::Colours::purple);
+        isMuted ? juce::Colours::hotpink : juce::Colours::lightblue);
 }
