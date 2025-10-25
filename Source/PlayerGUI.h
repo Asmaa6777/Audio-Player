@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <JuceHeader.h>
+
 class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
     public juce::Slider::Listener
@@ -20,31 +21,46 @@ public:
         virtual void backwardButtonClicked() = 0;
         virtual void goToEndButtonClicked() = 0;
     };
+
     PlayerGUI();
     ~PlayerGUI() override;
+
     void paint(juce::Graphics& g) override;
     void resized() override;
+
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
+
     void setListener(Listener* newListener);
+
     void setLoopState(bool isLooping);
     void setPlaybackState(bool isPlaying);
     void setVolumeLevel(float volume);
     void setMuteState(bool isMuted);
+
 private:
-    juce::TextButton loadButton{ "Load File" };
-    juce::TextButton playButton{ "Play" };
+    // === Image-based buttons ===
+    juce::DrawableButton muteButton{ "Mute",     juce::DrawableButton::ImageFitted };
+    juce::DrawableButton restartButton{ "Restart",  juce::DrawableButton::ImageFitted };
+    juce::DrawableButton backwardButton{ "Back10",   juce::DrawableButton::ImageFitted };
+    juce::DrawableButton playButton{ "Play",     juce::DrawableButton::ImageFitted };
+    juce::DrawableButton forwardButton{ "Forward10",juce::DrawableButton::ImageFitted };
+    juce::DrawableButton goToEndButton{ "GoToEnd",  juce::DrawableButton::ImageFitted };
+    juce::DrawableButton loopButton{ "Loop",     juce::DrawableButton::ImageFitted };
+
+    // === Text buttons (Load + Stop) ===
+    juce::TextButton loadButton{ "Load" };
     juce::TextButton stopButton{ "Stop" };
-    juce::TextButton restartButton{ "Restart" };
-    juce::TextButton loopButton{ "Loop: OFF" };
-    juce::TextButton muteButton{ "Mute: OFF" };
-    juce::TextButton forwardButton{ ">> 10s" };
-    juce::TextButton backwardButton{ "<< 10s" };
-    juce::TextButton goToEndButton{ "Go to End" };
+
     juce::Slider volumeSlider;
-    juce::Label volumeLabel{ "Volume" };
+    juce::Label  volumeLabel{ "Volume" };
+
     Listener* listener = nullptr;
     bool isPlaying = false;
     bool isMuted = false;
+    bool isLooping = false;
+
+    void loadButtonIcons();
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };

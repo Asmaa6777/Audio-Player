@@ -3,15 +3,30 @@
 <JUCERPROJECT id="vr7Fs8" name="Audio_" useAppConfig="0" addUsingNamespaceToJuceHeader="0"
               jucerFormatVersion="1" projectType="guiapp">
   <MAINGROUP id="ulQ2jE" name="Audio_">
-    <GROUP id="{B0D94052-9400-35CA-AD36-B5DFA38AD0A4}" name="Source">
-      <FILE id="IxUBmX" name="AudioGUI.cpp" compile="1" resource="0" file="Source/AudioGUI.cpp"/>
-      <FILE id="AVOhzO" name="AudioGUI.h" compile="0" resource="0" file="Source/AudioGUI.h"/>
-      <FILE id="TR6QbN" name="AudioPlayer.cpp" compile="1" resource="0" file="Source/AudioPlayer.cpp"/>
-      <FILE id="yL4UNz" name="AudioPlayer.h" compile="0" resource="0" file="Source/AudioPlayer.h"/>
-      <FILE id="Y6XWJg" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <FILE id="yZSpCm" name="MainComponent.cpp" compile="1" resource="0"
+    <GROUP id="{B0DD7419-0740-40B3-7AB0-778B4D3AA3CC}" name="Assest">
+      <GROUP id="{85F3592D-F4D1-7506-7D01-FB06AF051B21}" name="Icons">
+        <FILE id="ZyZ1wj" name="back10.jpg" compile="0" resource="1" file="Assest/Icons/back10.jpg"/>
+        <FILE id="ECXR4E" name="forward10.jpg" compile="0" resource="1" file="Assest/Icons/forward10.jpg"/>
+        <FILE id="RFQCoF" name="gotoend.jpg" compile="0" resource="1" file="Assest/Icons/gotoend.jpg"/>
+        <FILE id="rfywBS" name="loop.jpg" compile="0" resource="1" file="Assest/Icons/loop.jpg"/>
+        <FILE id="ACS8Qy" name="mute.jpg" compile="0" resource="1" file="Assest/Icons/mute.jpg"/>
+        <FILE id="zlqONW" name="pause.jpg" compile="0" resource="1" file="Assest/Icons/pause.jpg"/>
+        <FILE id="Mv5vX3" name="play.jpg" compile="0" resource="1" file="Assest/Icons/play.jpg"/>
+        <FILE id="J0MXij" name="restart.jpg" compile="0" resource="1" file="Assest/Icons/restart.jpg"/>
+        <FILE id="lMW4IG" name="unmute.jpg" compile="0" resource="1" file="Assest/Icons/unmute.jpg"/>
+      </GROUP>
+    </GROUP>
+    <GROUP id="{0C7C3CB4-A759-D6A5-D57D-DB20FAFEAAE7}" name="Source">
+      <FILE id="bmPlP3" name="AudioGUI.cpp" compile="1" resource="1" file="Source/AudioGUI.cpp"/>
+      <FILE id="qvEeDk" name="AudioGUI.h" compile="0" resource="1" file="Source/AudioGUI.h"/>
+      <FILE id="hDKCa2" name="Main.cpp" compile="1" resource="1" file="Source/Main.cpp"/>
+      <FILE id="EIsQv9" name="MainComponent.cpp" compile="1" resource="1"
             file="Source/MainComponent.cpp"/>
-      <FILE id="qOMEkx" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="ncw5si" name="MainComponent.h" compile="0" resource="1" file="Source/MainComponent.h"/>
+      <FILE id="Y3L6d5" name="PlayerAudio.cpp" compile="1" resource="1" file="Source/PlayerAudio.cpp"/>
+      <FILE id="YyRyOX" name="PlayerAudio.h" compile="0" resource="1" file="Source/PlayerAudio.h"/>
+      <FILE id="c0GmYX" name="PlayerGUI.cpp" compile="1" resource="1" file="Source/PlayerGUI.cpp"/>
+      <FILE id="P5YfKg" name="PlayerGUI.h" compile="0" resource="1" file="Source/PlayerGUI.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>
