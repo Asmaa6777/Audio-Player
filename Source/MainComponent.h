@@ -5,7 +5,7 @@
 #include "PlayerGUI.h"
 
 class MainComponent : public juce::AudioAppComponent,
-    public PlayerGUI::Listener
+    public PlayerGUI::Listener, public juce::Timer
 {
 public:
     MainComponent();
@@ -31,6 +31,8 @@ public:
     void forwardButtonClicked() override;
     void backwardButtonClicked() override;
     void goToEndButtonClicked() override;
+    void positionSliderMoved(double newSeconds) override;   
+    void timerCallback() override;
 
 private:
     void toggleMute();
@@ -43,4 +45,4 @@ private:
     float previousVolume = 1.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
-};
+}; 

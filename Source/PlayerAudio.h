@@ -26,6 +26,10 @@ public:
     float getVolume() const;
     void goToEnd();
 
+    double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
+    double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
+    void setPosition(double seconds) { transportSource.setPosition(seconds); }
+
 private:
     juce::AudioFormatManager formatManager;
     juce::AudioTransportSource transportSource;

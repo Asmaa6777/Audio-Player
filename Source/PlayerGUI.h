@@ -20,6 +20,7 @@ public:
         virtual void forwardButtonClicked() = 0;
         virtual void backwardButtonClicked() = 0;
         virtual void goToEndButtonClicked() = 0;
+        virtual void positionSliderMoved(double newSeconds) = 0;
     };
 
     PlayerGUI();
@@ -37,9 +38,10 @@ public:
     void setPlaybackState(bool isPlaying);
     void setVolumeLevel(float volume);
     void setMuteState(bool isMuted);
+    void updatePositionDisplay(double currentSeconds, double totalSeconds);
 
 private:
-    // === Image-based buttons ===
+    
     juce::DrawableButton muteButton{ "Mute",     juce::DrawableButton::ImageFitted };
     juce::DrawableButton restartButton{ "Restart",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton backwardButton{ "Back10",   juce::DrawableButton::ImageFitted };
@@ -47,13 +49,18 @@ private:
     juce::DrawableButton forwardButton{ "Forward10",juce::DrawableButton::ImageFitted };
     juce::DrawableButton goToEndButton{ "GoToEnd",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton loopButton{ "Loop",     juce::DrawableButton::ImageFitted };
-
-    // === Text buttons (Load + Stop) ===
+     
     juce::TextButton loadButton{ "Load" };
     juce::TextButton stopButton{ "Stop" };
 
     juce::Slider volumeSlider;
     juce::Label  volumeLabel{ "Volume" };
+
+    juce::Slider positionSlider;
+    juce::Label currentTimeLabel;
+    juce::Label totalTimeLabel;
+    double lastTotalSeconds = 0.0;
+    bool isPositionDragging = false;
 
     Listener* listener = nullptr;
     bool isPlaying = false;

@@ -1,15 +1,12 @@
-﻿#include "MainComponent.h"
+﻿#include "MainComponent.h" 
 
-//==============================================================================
 MainComponent::MainComponent()
 {
-    // Add GUI
+    startTimerHz(10);
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
 
-    // Audio: no inputs, 2 outputs (stereo)
     setAudioChannels(0, 2);
-
     setSize(800, 250);
 }
 
@@ -17,8 +14,7 @@ MainComponent::~MainComponent()
 {
     shutdownAudio();
 }
-
-//==============================================================================
+ 
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     player.prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -34,10 +30,10 @@ void MainComponent::releaseResources()
     player.releaseResources();
 }
 
-//==============================================================================
+ 
 void MainComponent::paint(juce::Graphics& g)
-{
-    g.fillAll(juce::Colours::darkgrey);
+{ 
+    g.fillAll(juce::Colour(0xFFF5F0FF)); // very light lavender
 }
 
 void MainComponent::resized()
@@ -45,8 +41,7 @@ void MainComponent::resized()
     playerGUI.setBounds(getLocalBounds());
 }
 
-//==============================================================================
-void MainComponent::loadButtonClicked()
+ void MainComponent::loadButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
         "Select an audio file...",
@@ -67,7 +62,7 @@ void MainComponent::loadButtonClicked()
         });
 }
 
-//==============================================================================
+ 
 void MainComponent::playButtonClicked()
 {
     if (player.isPlaying())
@@ -113,8 +108,7 @@ void MainComponent::volumeChanged(float newVolume)
         previousVolume = newVolume;
     }
 }
-
-//==============================================================================
+ 
 void MainComponent::toggleMute()
 {
     isMuted = !isMuted;
@@ -132,7 +126,7 @@ void MainComponent::toggleMute()
     playerGUI.setMuteState(isMuted);
 }
 
-//==============================================================================
+ 
 void MainComponent::forwardButtonClicked()
 {
     player.forward(10.0);
@@ -146,4 +140,25 @@ void MainComponent::backwardButtonClicked()
 void MainComponent::goToEndButtonClicked()
 {
     player.goToEnd();
+}
+
+void MainComponent::positionSliderMoved(double newSeconds)
+{
+ 
+    player.setPosition(newSeconds);
+
+
+    playerGUI.setPlaybackState(player.isPlaying());
+}
+
+void MainComponent::timerCallback()
+{
+    double total = player.getLengthInSeconds();
+    double current = player.getCurrentPosition();
+
+    if (!std::isfinite(total) || total <= 0.0)
+        total = 0.0;
+
+    playerGUI.updatePositionDisplay(current, total);
+    playerGUI.setPlaybackState(player.isPlaying());
 }

@@ -2,17 +2,14 @@
 
 PlayerGUI::PlayerGUI()
 {
-    loadButtonIcons();
-
-    // === 🎨 Lavender Haze Color Palette ===
-    auto baseColour = juce::Colour(0xFFD8CFFC); // pastel lavender
-    auto accentColour = juce::Colour(0xFFB5A8F0); // soft lilac
-    auto activeColour = juce::Colour(0xFF9A8CFF); // glowing lavender
-    auto borderColour = juce::Colour(0xFF7D6AE0); // deep violet
-    auto textColour = juce::Colour(0xFF3D2C6B); // indigo text
-    auto sliderThumb = juce::Colour(0xFF8A7CE6); // medium orchid
-
-    // === Text buttons (Load + Stop) ===
+    loadButtonIcons(); 
+    auto baseColour = juce::Colour(0xFFE6E6FA); // lavender
+    auto accentColour = juce::Colour(0xFFB19CD9); // light purple
+    auto activeColour = juce::Colour(0xFF9370DB); // medium purple
+    auto borderColour = juce::Colour(0xFF6A5ACD); // slate blue
+    auto textColour = juce::Colour(0xFF191970); // midnight blue (navy)
+    auto sliderThumb = juce::Colour(0xFF483D8B); // dark slate blue
+     
     for (auto* button : { &loadButton, &stopButton })
     {
         addAndMakeVisible(button);
@@ -23,7 +20,7 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
 
-    // === Image buttons ===
+     
     for (auto* button : { &muteButton, &restartButton, &backwardButton, &playButton,
                           &forwardButton, &goToEndButton, &loopButton })
     {
@@ -34,22 +31,43 @@ PlayerGUI::PlayerGUI()
         button->setAlpha(0.95f);
     }
 
-    // === Volume slider ===
+    
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
     volumeSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
     volumeSlider.setColour(juce::Slider::thumbColourId, sliderThumb);
-    volumeSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFE7E3FF)); // misty violet
+    volumeSlider.setColour(juce::Slider::trackColourId, accentColour);
+    volumeSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF)); // very light lavender
     volumeSlider.setColour(juce::Slider::textBoxTextColourId, textColour);
-    volumeSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xFFF5F3FF));
+    volumeSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xFFF8F6FF));
+    volumeSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0xFFD8BFD8));
     addAndMakeVisible(volumeSlider);
-
-    // === Volume label ===
+ 
     volumeLabel.setJustificationType(juce::Justification::centredLeft);
     volumeLabel.setText("Volume", juce::dontSendNotification);
     volumeLabel.setColour(juce::Label::textColourId, textColour);
     addAndMakeVisible(volumeLabel);
+
+ 
+    positionSlider.setRange(0.0, 1.0, 0.0001);
+    positionSlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    positionSlider.addListener(this);
+    positionSlider.setColour(juce::Slider::thumbColourId, sliderThumb);
+    positionSlider.setColour(juce::Slider::trackColourId, accentColour);
+    positionSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF));
+    addAndMakeVisible(positionSlider);
+
+   
+    currentTimeLabel.setText("0:00", juce::dontSendNotification);
+    totalTimeLabel.setText("0:00", juce::dontSendNotification);
+    currentTimeLabel.setJustificationType(juce::Justification::centred);
+    totalTimeLabel.setJustificationType(juce::Justification::centred);
+    currentTimeLabel.setColour(juce::Label::textColourId, textColour);
+    totalTimeLabel.setColour(juce::Label::textColourId, textColour);
+    addAndMakeVisible(currentTimeLabel);
+    addAndMakeVisible(totalTimeLabel);
 
     setLoopState(false);
     setPlaybackState(false);
@@ -58,19 +76,20 @@ PlayerGUI::PlayerGUI()
 
 PlayerGUI::~PlayerGUI() = default;
 
-// === 🌙 Background + border ===
 void PlayerGUI::paint(juce::Graphics& g)
 {
+    // Lavender gradient background
     juce::ColourGradient gradient(
-        juce::Colour(0xFFF6F4FF), 0, 0,          // top — soft white-lavender
-        juce::Colour(0xFFDAD4FF), 0, (float)getHeight(), // bottom — faint violet haze
+        juce::Colour(0xFFF5F0FF), 0, 0,          // top — very light lavender
+        juce::Colour(0xFFE6E6FA), 0, (float)getHeight(), // bottom — lavender
         false
     );
     g.setGradientFill(gradient);
     g.fillAll();
 
-    g.setColour(juce::Colour(0xFF9A8CFF)); // medium lavender border
-    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f), 12.0f, 3.0f);
+    // Navy blue border
+    g.setColour(juce::Colour(0xFF191970));
+    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f), 12.0f, 2.5f);
 }
 
 void PlayerGUI::resized()
@@ -82,7 +101,6 @@ void PlayerGUI::resized()
 
     int x = 20;
 
-    // Layout: Load | Mute | Restart | <<10 | [PLAY] | >>10 | GoToEnd | Loop | Stop
     loadButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     muteButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     restartButton.setBounds(x, y, buttonWidth, buttonHeight);    x += buttonWidth + spacing;
@@ -93,8 +111,17 @@ void PlayerGUI::resized()
     loopButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     stopButton.setBounds(x, y, buttonWidth, buttonHeight);
 
-    volumeLabel.setBounds(20, 135, 100, 20);
-    volumeSlider.setBounds(20, 160, getWidth() - 40, 30);
+    int labelWidth = 100;
+    int labelHeight = 20;
+    int sliderHeight = 30;
+
+    currentTimeLabel.setBounds(20, 135, labelWidth, labelHeight);
+    totalTimeLabel.setBounds(getWidth() - 20 - labelWidth, 135, labelWidth, labelHeight);
+
+    positionSlider.setBounds(20 + labelWidth + 5, 135 - 5, getWidth() - (labelWidth * 2 + 50), sliderHeight);
+
+    volumeLabel.setBounds(20, 135 + 45, 100, 20);
+    volumeSlider.setBounds(20, 135 + 70, getWidth() - 40, 30);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -116,6 +143,15 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider && listener)
         listener->volumeChanged((float)slider->getValue());
+    else if (slider == &positionSlider && listener)
+    {
+         
+        double cur = positionSlider.getValue() * lastTotalSeconds;
+        currentTimeLabel.setText(juce::String::formatted("%d:%02d", (int)(cur / 60.0), (int)((int)cur % 60)), juce::dontSendNotification);
+ 
+        double newSeconds = positionSlider.getValue() * lastTotalSeconds;
+        listener->positionSliderMoved(newSeconds);
+    }
 }
 
 void PlayerGUI::setListener(Listener* newListener)
@@ -125,12 +161,10 @@ void PlayerGUI::setListener(Listener* newListener)
 
 void PlayerGUI::loadButtonIcons()
 {
-    // === 🎵 Image loading ===
     auto playImg = juce::Drawable::createFromImageData(BinaryData::play_jpg, BinaryData::play_jpgSize);
     auto pauseImg = juce::Drawable::createFromImageData(BinaryData::pause_jpg, BinaryData::pause_jpgSize);
     playButton.setImages(playImg.get(), nullptr, nullptr, nullptr, pauseImg.get());
 
-    // 🔊 Correct order: "mute" = unmuted (default), "unmute" = muted (toggled)
     auto muteImg = juce::Drawable::createFromImageData(BinaryData::mute_jpg, BinaryData::mute_jpgSize);
     auto unmuteImg = juce::Drawable::createFromImageData(BinaryData::unmute_jpg, BinaryData::unmute_jpgSize);
     muteButton.setImages(muteImg.get(), nullptr, nullptr, nullptr, unmuteImg.get());
@@ -156,8 +190,8 @@ void PlayerGUI::setLoopState(bool isLoopingNow)
     isLooping = isLoopingNow;
     loopButton.setToggleState(isLooping, juce::dontSendNotification);
 
-    auto base = juce::Colour(0xFFB5A8F0); // soft lilac
-    auto active = juce::Colour(0xFF9A8CFF); // bright lavender
+    auto base = juce::Colour(0xFFB19CD9); // light purple
+    auto active = juce::Colour(0xFF9370DB); // medium purple  
     loopButton.setColour(juce::DrawableButton::backgroundColourId, isLooping ? active : base);
     loopButton.setColour(juce::DrawableButton::backgroundOnColourId, isLooping ? active : base);
 }
@@ -177,4 +211,28 @@ void PlayerGUI::setMuteState(bool isMutedNow)
 {
     isMuted = isMutedNow;
     muteButton.setToggleState(isMuted, juce::dontSendNotification);
+}
+
+void PlayerGUI::updatePositionDisplay(double currentSeconds, double totalSeconds)
+{
+    
+    lastTotalSeconds = totalSeconds;
+
+     
+    if (totalSeconds > 0.0)
+        positionSlider.setValue(currentSeconds / totalSeconds, juce::dontSendNotification);
+    else
+        positionSlider.setValue(0.0, juce::dontSendNotification);
+
+     
+    auto formatTime = [](double s) -> juce::String {
+        if (s <= 0.0 || !std::isfinite(s)) return "0:00";
+        int total = (int)std::round(s);
+        int mins = total / 60;
+        int secs = total % 60;
+        return juce::String::formatted("%d:%02d", mins, secs);
+        };
+
+    currentTimeLabel.setText(formatTime(currentSeconds), juce::dontSendNotification);
+    totalTimeLabel.setText(formatTime(totalSeconds), juce::dontSendNotification);
 }
