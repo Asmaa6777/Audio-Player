@@ -18,6 +18,7 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
         readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
         readerSource->setLooping(isLooping);
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
+        currentFile = audioFile; 
     }
 }
 void PlayerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -87,5 +88,28 @@ void PlayerAudio::goToEnd()
     {
         double totalLength = transportSource.getLengthInSeconds();
         transportSource.setPosition(juce::jmax(0.0, totalLength - 0.1));
+    }
+}
+
+
+void PlayerAudio::SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix)
+{
+    props.setValue(keyPrefix + "_lastFile", currentFile.getFullPathName());
+    props.setValue(keyPrefix + "_lastPosition", transportSource.getCurrentPosition());
+    props.saveIfNeeded();
+}
+
+void PlayerAudio::RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix)
+{
+    juce::String lastFile = props.getValue(keyPrefix + "_lastFile", "");
+    if (lastFile.isNotEmpty())
+    {
+        juce::File fileToLoad(lastFile);
+        if (fileToLoad.existsAsFile())
+        {
+            loadFile(fileToLoad);
+            double lastPosition = props.getDoubleValue(keyPrefix + "_lastPosition", 0.0);
+            transportSource.setPosition(lastPosition);
+        }
     }
 }

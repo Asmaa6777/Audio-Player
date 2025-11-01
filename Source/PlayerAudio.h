@@ -29,6 +29,8 @@ public:
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
+	void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
+	void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 
 private:
     juce::AudioFormatManager formatManager;
@@ -37,4 +39,5 @@ private:
 
     bool isLooping = false;
     float currentVolume = 1.0f;
+    juce::File currentFile;
 };

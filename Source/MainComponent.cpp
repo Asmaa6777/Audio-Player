@@ -1,7 +1,24 @@
-﻿#include "MainComponent.h" 
+﻿#include "MainComponent.h"
+#include <juce_data_structures/juce_data_structures.h>
 
+// ========================
+// Constructor
+// ========================
 MainComponent::MainComponent()
 {
+    // Create and configure the PropertiesFile for saving app state
+    juce::PropertiesFile::Options options;
+    options.applicationName = "MyAudioPlayer";
+    options.filenameSuffix = ".settings";
+    options.osxLibrarySubFolder = "Application Support"; // for macOS, ignored on Windows/Linux
+    options.folderName = "MyAudioPlayerData";
+    options.storageFormat = juce::PropertiesFile::storeAsXML;
+
+    propertiesFile = std::make_unique<juce::PropertiesFile>(options);
+
+    // Restore last session if available
+    RestoreState();
+
     startTimerHz(10);
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
@@ -10,11 +27,20 @@ MainComponent::MainComponent()
     setSize(800, 250);
 }
 
+// ========================
+// Destructor
+// ========================
 MainComponent::~MainComponent()
 {
+    // Save state before shutting down audio
+    SaveState();
+
     shutdownAudio();
 }
- 
+
+// ========================
+// Audio setup
+// ========================
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     player.prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -30,9 +56,11 @@ void MainComponent::releaseResources()
     player.releaseResources();
 }
 
- 
+// ========================
+// GUI
+// ========================
 void MainComponent::paint(juce::Graphics& g)
-{ 
+{
     g.fillAll(juce::Colour(0xFFF5F0FF)); // very light lavender
 }
 
@@ -41,7 +69,10 @@ void MainComponent::resized()
     playerGUI.setBounds(getLocalBounds());
 }
 
- void MainComponent::loadButtonClicked()
+// ========================
+// GUI Button Actions
+// ========================
+void MainComponent::loadButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
         "Select an audio file...",
@@ -62,17 +93,12 @@ void MainComponent::resized()
         });
 }
 
- 
 void MainComponent::playButtonClicked()
 {
     if (player.isPlaying())
-    {
         player.stop();
-    }
     else
-    {
         player.play();
-    }
 
     playerGUI.setPlaybackState(player.isPlaying());
 }
@@ -108,7 +134,7 @@ void MainComponent::volumeChanged(float newVolume)
         previousVolume = newVolume;
     }
 }
- 
+
 void MainComponent::toggleMute()
 {
     isMuted = !isMuted;
@@ -126,7 +152,6 @@ void MainComponent::toggleMute()
     playerGUI.setMuteState(isMuted);
 }
 
- 
 void MainComponent::forwardButtonClicked()
 {
     player.forward(10.0);
@@ -144,13 +169,13 @@ void MainComponent::goToEndButtonClicked()
 
 void MainComponent::positionSliderMoved(double newSeconds)
 {
- 
     player.setPosition(newSeconds);
-
-
     playerGUI.setPlaybackState(player.isPlaying());
 }
 
+// ========================
+// Timer
+// ========================
 void MainComponent::timerCallback()
 {
     double total = player.getLengthInSeconds();
@@ -161,4 +186,19 @@ void MainComponent::timerCallback()
 
     playerGUI.updatePositionDisplay(current, total);
     playerGUI.setPlaybackState(player.isPlaying());
+}
+
+// ========================
+// State Saving / Loading
+// ========================
+void MainComponent::SaveState()
+{
+    if (propertiesFile)
+        player.SaveState(*propertiesFile, "player");
+}
+
+void MainComponent::RestoreState()
+{
+    if (propertiesFile)
+        player.RestoreState(*propertiesFile, "player");
 }

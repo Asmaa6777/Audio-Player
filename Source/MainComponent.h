@@ -14,7 +14,7 @@ public:
     // AudioAppComponent
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
-    void releaseResources() override;
+    void releaseResources() override;   
 
     // GUI
     void paint(juce::Graphics&) override;
@@ -33,6 +33,8 @@ public:
     void goToEndButtonClicked() override;
     void positionSliderMoved(double newSeconds) override;   
     void timerCallback() override;
+    void SaveState();
+    void RestoreState();
 
 private:
     void toggleMute();
@@ -40,9 +42,11 @@ private:
     PlayerAudio player;
     PlayerGUI playerGUI;
     std::unique_ptr<juce::FileChooser> fileChooser;
+    std::unique_ptr<juce::PropertiesFile> propertiesFile;
+
 
     bool isMuted = false;
     float previousVolume = 1.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
-}; 
+};
