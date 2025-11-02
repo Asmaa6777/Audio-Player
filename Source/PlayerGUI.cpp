@@ -3,12 +3,13 @@
 PlayerGUI::PlayerGUI()
 {
     loadButtonIcons(); 
-    auto baseColour = juce::Colour(0xFFE6E6FA); // lavender
-    auto accentColour = juce::Colour(0xFFB19CD9); // light purple
-    auto activeColour = juce::Colour(0xFF9370DB); // medium purple
-    auto borderColour = juce::Colour(0xFF6A5ACD); // slate blue
-    auto textColour = juce::Colour(0xFF191970); // midnight blue (navy)
-    auto sliderThumb = juce::Colour(0xFF483D8B); // dark slate blue
+  auto baseColour = juce::Colour(0xFF2B2B5E);     // deep space blue
+  auto accentColour = juce::Colour(0xFF6A5ACD);   // violet
+  auto activeColour = juce::Colour(0xFF9370DB);   // brighter purple
+  auto borderColour = juce::Colour(0xFF483D8B);   // slate
+  auto textColour = juce::Colour(0xFFB0AFFF);     // soft white-blue
+  auto sliderThumb = juce::Colour(0xFFAD8CFF);    // glowing lavender
+
      
     for (auto* button : { &loadButton, &stopButton })
     {
@@ -78,19 +79,38 @@ PlayerGUI::~PlayerGUI() = default;
 
 void PlayerGUI::paint(juce::Graphics& g)
 {
-    // Lavender gradient background
-    juce::ColourGradient gradient(
-        juce::Colour(0xFFF5F0FF), 0, 0,          // top — very light lavender
-        juce::Colour(0xFFE6E6FA), 0, (float)getHeight(), // bottom — lavender
-        false
-    );
-    g.setGradientFill(gradient);
+    // Create a dark-to-deep-blue gradient like a night sky
+    juce::ColourGradient spaceGradient(
+        juce::Colour::fromRGB(10, 10, 25), 0, 0,                // top (dark blue)
+        juce::Colour::fromRGB(0, 0, 0), 0, (float)getHeight(),  // bottom (black)
+        false);
+    g.setGradientFill(spaceGradient);
     g.fillAll();
 
-    // Navy blue border
-    g.setColour(juce::Colour(0xFF191970));
-    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f), 12.0f, 2.5f);
+    // Draw tiny stars randomly
+    for (int i = 0; i < 150; ++i)
+    {
+        float x = juce::Random::getSystemRandom().nextFloat() * getWidth();
+        float y = juce::Random::getSystemRandom().nextFloat() * getHeight();
+        float brightness = juce::Random::getSystemRandom().nextFloat() * 0.7f + 0.3f;
+
+        juce::Colour starColour = juce::Colours::white.withBrightness(brightness);
+        g.setColour(starColour);
+        g.fillEllipse(x, y, 1.5f, 1.5f); // small star
+    }
+
+    // Add a faint purple nebula glow
+    g.setColour(juce::Colour::fromRGBA(140, 120, 255, 40));
+    g.fillEllipse(getWidth() * 0.2f, getHeight() * 0.3f, 300, 180);
+
+    g.setColour(juce::Colour::fromRGBA(255, 200, 255, 25));
+    g.fillEllipse(getWidth() * 0.6f, getHeight() * 0.5f, 400, 220);
+
+    // Add an outer glow border for style
+    g.setColour(juce::Colour::fromRGB(80, 70, 160));
+    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(2.0f), 12.0f, 3.0f);
 }
+
 
 void PlayerGUI::resized()
 {

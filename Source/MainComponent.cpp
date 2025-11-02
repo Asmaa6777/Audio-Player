@@ -4,6 +4,7 @@
 // ========================
 // Constructor
 // ========================
+
 MainComponent::MainComponent()
 {
     // Create and configure the PropertiesFile for saving app state

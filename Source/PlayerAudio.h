@@ -17,7 +17,7 @@ public:
     bool toggleLooping();
     bool isPlaying() const;
 
- 
+
     bool isLoopingEnabled() const { return isLooping; }
 
     void backward(double seconds);
@@ -25,12 +25,13 @@ public:
     void setVolume(float newVolume);
     float getVolume() const;
     void goToEnd();
-
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
 	void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 	void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
+	void markerJump(int markerIndex);
+
 
 private:
     juce::AudioFormatManager formatManager;
