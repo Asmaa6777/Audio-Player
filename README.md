@@ -2,7 +2,7 @@
 🎧 Overview
 
 This project is a modern dual audio player built with JUCE, featuring two synchronized players, a mixer, and a unique audio slicer innovation.
-It provides an immersive experience for playing, looping, and mixing tracks — ideal for creative experimentation, music production, or DJ-like control.
+It provides an immersive experience for playing, looping, and mixing tracks — ideal for creative experimentation, music production, or DJ-style control.
 
 🚀 Features
 🎵 1. Dual Audio Players
@@ -11,7 +11,7 @@ Two independent PlayerGUI components.
 
 Each can load, play, loop, mute, and seek within an audio file.
 
-Visually displays waveform previews for both players.
+Displays waveform previews for both players.
 
 Only one player outputs audio at a time (for clarity), unless mixing mode is enabled.
 
@@ -23,7 +23,7 @@ Mix their outputs seamlessly in real time.
 
 Independent mute and loop control for each player.
 
-Enables users to test simple transitions or overlay tracks creatively.
+Enables users to create simple transitions or overlay tracks creatively.
 
 ✂️ 3. Innovation: Audio Slicer
 
@@ -33,7 +33,7 @@ Define start and end markers (A–B) and extract or loop just that region.
 
 Useful for creating short samples, looping beats, or preparing remix snippets.
 
-Can preview slices and export them as standalone clips (future extension).
+Can preview slices and (in future versions) export them as standalone clips.
 
 🧩 Core Components
 File	Description
@@ -46,37 +46,36 @@ BinaryData	Compiled image and icon resources included in the app.
 
 Gradient background with a space-themed color palette 🌌
 
-Each player has:
+Each player includes:
 
 Load / Play / Stop / Loop / Mute / Skip buttons
 
-A waveform preview
+Waveform preview
 
 Volume and position sliders
 
 A–B marker controls
 
-Mixer control: central panel (to be added) lets you fade between Player 1 and Player 2
+Central mixer control panel (to be added) for fading between Player 1 and Player 2.
 
 🧠 How It Works
-
-JUCE Audio Engine
+🎧 JUCE Audio Engine
 
 Uses AudioTransportSource for each player.
 
 Handles real-time playback, looping, and position tracking.
 
-Mixing Logic
+🎚️ Mixing Logic
 
 Two AudioSourceChannelInfo streams combined in the mixer.
 
-Each player’s volume determines its contribution to the final buffer.
+Each player’s volume determines its contribution to the final output buffer.
 
-Slicing System
+✂️ Slicing System
 
 Uses user-defined markers (A & B) to define loop segments.
 
-Optional future extension: export slice to new file.
+Future versions will support exporting slices as new audio files.
 
 🛠️ Build Instructions
 Prerequisites
@@ -88,21 +87,36 @@ C++17 compatible compiler
 
 Visual Studio / CLion / Xcode
 
- 
+Build Steps
+
+Open the .jucer project in Projucer.
+
+Configure the exporter for your IDE (Visual Studio, Xcode, etc).
+
+Click “Save and Open in IDE.”
+
+Build and run the project.
+
+Alternatively, build using CMake:
+
+cmake -Bbuild
+cmake --build build
+
 🔮 Future Improvements
 
 🎚️ Dedicated Mixer Panel UI with smooth crossfades
 
-🎛️ EQ and Filter controls per player
+🎛️ EQ and Filter Controls per player
 
 💾 Export sliced clips as new audio files
 
 🌈 Dynamic visualizer synchronized with playback
 
-🎚️ MIDI controller support for live performance
+🎹 MIDI controller support for live performance
 
 👩‍💻 Authors
+
 Asmaa Faroug
-Arwa bashier
+Arwa Bashier
 Mariam Sherif
 Mariam Ahmed
