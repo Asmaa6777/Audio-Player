@@ -25,10 +25,14 @@ public:
         virtual void markerBButtonClicked() = 0;
         virtual void clearMarkersButtonClicked() = 0;
         virtual void segmentLoopButtonClicked() = 0;
+        virtual void sliceButtonClicked() = 0;
+        virtual void saveSliceButtonClicked() = 0;
     };
 
     PlayerGUI();
     ~PlayerGUI() override;
+
+    void setSliceState(bool hasSlice);
      
     void resized() override;
 
@@ -77,6 +81,10 @@ private:
     juce::TextButton markerBButton{ "set B" };
     juce::TextButton clearMarkersButton{ "Clear" };
     juce::TextButton segmentLoopButton{ "A-B Loop" };
+
+    juce::TextButton sliceButton{ "Create A-B Slice" };
+    juce::TextButton saveSliceButton{ "Save Slice" };
+    juce::Label sliceInfoLabel;
 
     void loadButtonIcons();
 

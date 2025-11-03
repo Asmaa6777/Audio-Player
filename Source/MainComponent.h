@@ -5,22 +5,23 @@
 #include "PlayerGUI.h"
 
 class MainComponent : public juce::AudioAppComponent,
-    public PlayerGUI::Listener, public juce::Timer
+    public PlayerGUI::Listener,
+    public juce::Timer
 {
 public:
     MainComponent();
     ~MainComponent() override;
 
-    // AudioAppComponent
+    // ========== Component pure virtual functions ==========
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+
+    // ========== AudioAppComponent pure virtual functions ==========
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
-    // GUI
-    void paint(juce::Graphics&) override;
-    void resized() override;
-
-    // === PlayerGUI::Listener callbacks ===
+    // ========== PlayerGUI::Listener callbacks - ALL REQUIRED ==========
     void loadButtonClicked() override;
     void playButtonClicked() override;
     void stopButtonClicked() override;
@@ -32,16 +33,23 @@ public:
     void backwardButtonClicked() override;
     void goToEndButtonClicked() override;
     void positionSliderMoved(double newSeconds) override;
-    void timerCallback() override;
-    void SaveState();
-    void RestoreState();
     void markerAButtonClicked() override;
     void markerBButtonClicked() override;
     void clearMarkersButtonClicked() override;
     void segmentLoopButtonClicked() override;
+    void sliceButtonClicked() override;
+    void saveSliceButtonClicked() override; 
+
+    // ========== Timer pure virtual function ==========
+    void timerCallback() override;
+
+    // ========== Other methods ==========
+    void SaveState();
+    void RestoreState();
 
 private:
     void toggleMute();
+    void updateSliceState();
 
     PlayerAudio player;
     PlayerGUI playerGUI;
@@ -51,7 +59,6 @@ private:
     bool isMuted = false;
     float previousVolume = 1.0f;
 
-    // === Waveform & Rotating CD Image ===
     juce::AudioFormatManager formatManager;
     juce::AudioThumbnailCache thumbnailCache{ 5 };
     juce::AudioThumbnail thumbnail{ 512, formatManager, thumbnailCache };

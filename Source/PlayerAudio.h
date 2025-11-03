@@ -17,7 +17,6 @@ public:
     bool toggleLooping();
     bool isPlaying() const;
 
-
     bool isLoopingEnabled() const { return isLooping; }
 
     void backward(double seconds);
@@ -28,8 +27,8 @@ public:
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
-	void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
-	void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
+    void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
+    void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 
     void setMarkerA();
     void setMarkerB();
@@ -40,7 +39,12 @@ public:
     double getMarkerB() const { return markerB; }
     bool hasMarkers() const { return markerA >= 0 && markerB > markerA; }
     void checkSegmentLooping();
-   
+
+    // Audio Slicing methods
+       bool createSliceFromMarkers();
+    bool saveSliceToFile(const juce::File& outputFile);
+    bool hasValidSlice() const;
+    juce::String getSliceInfo() const;
 
 private:
     juce::AudioFormatManager formatManager;
@@ -55,4 +59,10 @@ private:
     bool segmentLooping = false;
 
     juce::File currentFile;
+
+    // Slicing system
+    juce::AudioBuffer<float> audioSlice;
+    bool sliceReady = false;
+    double sliceStart = 0.0;
+    double sliceEnd = 0.0;
 };

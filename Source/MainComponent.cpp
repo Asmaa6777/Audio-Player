@@ -17,6 +17,7 @@ MainComponent::MainComponent()
     RestoreState();
 
     startTimerHz(10);
+
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
 
@@ -165,6 +166,9 @@ void MainComponent::loadButtonClicked()
                 thumbnail.setSource(new juce::FileInputSource(file));
                 showWaveform = true;
 
+                // Reset slice state when new file is loaded
+                updateSliceState();
+
                 repaint();
             }
         });
@@ -299,12 +303,14 @@ void MainComponent::markerAButtonClicked()
 {
     player.setMarkerA();
     playerGUI.setMarkerAState(player.getMarkerA() >= 0);
+    updateSliceState(); // Update slice state when markers change
 }
 
 void MainComponent::markerBButtonClicked()
 {
     player.setMarkerB();
     playerGUI.setMarkerBState(player.getMarkerB() >= 0);
+    updateSliceState(); // Update slice state when markers change
 }
 
 void MainComponent::clearMarkersButtonClicked()
@@ -313,6 +319,7 @@ void MainComponent::clearMarkersButtonClicked()
     playerGUI.setMarkerAState(false);
     playerGUI.setMarkerBState(false);
     playerGUI.setSegmentLoopState(false);
+    updateSliceState(); // Update slice state when markers are cleared
 }
 
 void MainComponent::segmentLoopButtonClicked()
@@ -326,4 +333,76 @@ void MainComponent::segmentLoopButtonClicked()
         player.toggleLooping();
         playerGUI.setLoopState(false);
     }
+}
+
+// ========================
+// Slicing Functionality
+// ========================
+
+void MainComponent::sliceButtonClicked()
+{
+    if (player.createSliceFromMarkers())
+    {
+        updateSliceState();
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
+            "Slice Created",
+            "Audio slice created successfully! Use the existing A-B loop to preview, then click Save Slice to export.");
+    }
+    else
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::WarningIcon,
+            "Slice Failed",
+            "Could not create slice. Make sure you have:\n"
+            "1. Loaded an audio file\n"
+            "2. Set both A and B markers\n"
+            "3. The A-B segment has valid duration");
+    }
+}
+
+void MainComponent:: saveSliceButtonClicked()
+{
+    if (!player.hasValidSlice())
+    {
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::WarningIcon,
+            "No Slice",
+            "No slice available to save. Please create a slice first.");
+        return;
+    }
+
+    fileChooser = std::make_unique<juce::FileChooser>(
+        "Save audio slice as WAV file...",
+        juce::File::getSpecialLocation(juce::File::userDocumentsDirectory),
+        "*.wav");
+
+    fileChooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+        [this](const juce::FileChooser& chooser)
+        {
+            auto file = chooser.getResult();
+            if (file != juce::File{})
+            {
+                // Ensure the file has .wav extension
+                if (!file.hasFileExtension(".wav"))
+                {
+                    file = file.withFileExtension(".wav");
+                }
+
+                if (player.saveSliceToFile(file))
+                {
+                    juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
+                        "Slice Saved",
+                        "Audio slice saved successfully to:\n" + file.getFullPathName());
+                }
+                else
+                {
+                    juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::WarningIcon,
+                        "Save Failed",
+                        "Failed to save audio slice. Please check file permissions and try again.");
+                }
+            }
+        });
+}
+
+void MainComponent::updateSliceState()
+{
+    playerGUI.setSliceState(player.hasValidSlice());
 }

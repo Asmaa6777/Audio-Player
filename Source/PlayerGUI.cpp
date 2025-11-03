@@ -43,6 +43,27 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
 
+    // Slicing buttons - same styling as A-B buttons
+    for (auto* button : { &sliceButton, &saveSliceButton })
+    {
+        addAndMakeVisible(button);
+        button->addListener(this);
+        button->setColour(juce::TextButton::buttonColourId, accentColour);
+        button->setColour(juce::TextButton::buttonOnColourId, activeColour);
+        button->setColour(juce::TextButton::textColourOffId, textColour);
+        button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    }
+
+    sliceButton.setButtonText("Create Slice");
+    saveSliceButton.setButtonText("Save Slice");
+    saveSliceButton.setEnabled(false); // Initially disabled until slice is created
+
+    // Slice info label
+    sliceInfoLabel.setJustificationType(juce::Justification::centred);
+    sliceInfoLabel.setText("Set A-B markers and click Create Slice", juce::dontSendNotification);
+    sliceInfoLabel.setColour(juce::Label::textColourId, textColour);
+    addAndMakeVisible(sliceInfoLabel);
+
     // Volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
@@ -87,7 +108,7 @@ PlayerGUI::PlayerGUI()
 }
 
 PlayerGUI::~PlayerGUI() = default;
-   
+
 void PlayerGUI::resized()
 {
     auto area = getLocalBounds();
@@ -138,6 +159,29 @@ void PlayerGUI::resized()
     clearMarkersButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);   abX += abButtonWidth + abSpacing;
     segmentLoopButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);
 
+    // Slicing buttons row (below A-B buttons)
+    auto sliceRow = area.removeFromTop(40); // 40px height for slicing buttons
+    sliceRow.reduce(margin, 0);
+
+    int sliceButtonWidth = 80;
+    int sliceButtonHeight = 30;
+    int sliceSpacing = 15;
+
+    // Calculate dynamic positions for slicing buttons
+    int totalSliceWidth = (sliceButtonWidth + sliceSpacing) * 2 - sliceSpacing; // 2 slicing buttons
+    int sliceStartX = (sliceRow.getWidth() - totalSliceWidth) / 2; // Center the slicing buttons
+
+    int sliceX = sliceStartX;
+    int sliceY = sliceRow.getY() + 5; // Slight vertical padding
+
+    sliceButton.setBounds(sliceX, sliceY, sliceButtonWidth, sliceButtonHeight);
+    sliceX += sliceButtonWidth + sliceSpacing;
+    saveSliceButton.setBounds(sliceX, sliceY, sliceButtonWidth, sliceButtonHeight);
+
+    // Slice info label (below slicing buttons)
+    auto infoRow = area.removeFromTop(25);
+    sliceInfoLabel.setBounds(infoRow);
+
     // Bottom controls (position slider and volume)
     auto bottomArea = area.reduced(margin);
 
@@ -174,6 +218,8 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &markerBButton)  listener->markerBButtonClicked();
     else if (button == &clearMarkersButton) listener->clearMarkersButtonClicked();
     else if (button == &segmentLoopButton) listener->segmentLoopButtonClicked();
+    else if (button == &sliceButton)     listener->sliceButtonClicked();
+    else if (button == &saveSliceButton) listener->saveSliceButtonClicked();
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -225,8 +271,8 @@ void PlayerGUI::setLoopState(bool isLoopingNow)
 {
     isLooping = isLoopingNow;
     loopButton.setToggleState(isLooping, juce::dontSendNotification);
-   
-    auto accentColour = juce::Colour(0xFF6A5ACD);   
+
+    auto accentColour = juce::Colour(0xFF6A5ACD);
     auto activeColour = juce::Colour(0xFF9370DB);
 
     loopButton.setColour(juce::DrawableButton::backgroundColourId, isLooping ? activeColour : accentColour);
@@ -287,4 +333,17 @@ void PlayerGUI::setSegmentLoopState(bool isActive)
 {
     segmentLoopButton.setToggleState(isActive, juce::dontSendNotification);
     // Colors are already set in constructor, toggle state handles the visual change
+}
+
+void PlayerGUI::setSliceState(bool hasSlice)
+{
+    saveSliceButton.setEnabled(hasSlice);
+    if (hasSlice)
+    {
+        sliceInfoLabel.setText("Slice Ready! Click Save Slice to export", juce::dontSendNotification);
+    }
+    else
+    {
+        sliceInfoLabel.setText("Set A-B markers and click Create Slice", juce::dontSendNotification);
+    }
 }
