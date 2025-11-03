@@ -11,7 +11,7 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
 {
     if (auto* reader = formatManager.createReaderFor(audioFile))
     {
-        // Safely stop playback and clear previous source
+         
         transportSource.stop();
         transportSource.setSource(nullptr);
         readerSource.reset();
@@ -28,6 +28,7 @@ void PlayerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
     transportSource.getNextAudioBlock(bufferToFill);
+    checkSegmentLooping(); 
 }
 void PlayerAudio::releaseResources()
 {
@@ -110,6 +111,54 @@ void PlayerAudio::RestoreState(juce::PropertiesFile& props, const juce::String& 
             loadFile(fileToLoad);
             double lastPosition = props.getDoubleValue(keyPrefix + "_lastPosition", 0.0);
             transportSource.setPosition(lastPosition);
+        }
+    }
+}
+
+//task 10 segment looping
+
+void PlayerAudio::setMarkerA()
+{
+    markerA = transportSource.getCurrentPosition();
+    if (markerB > 0 && markerA > markerB)
+    {
+
+        std::swap(markerA, markerB);
+    }
+}
+
+void PlayerAudio::setMarkerB()
+{
+    markerB = transportSource.getCurrentPosition();
+    if (markerA > 0 && markerB < markerA)
+    {
+
+        std::swap(markerA, markerB);
+    }
+}
+
+void PlayerAudio::clearMarkers()
+{
+    markerA = -1.0;
+    markerB = -1.0;
+    segmentLooping = false;
+}
+
+void PlayerAudio::setSegmentLooping(bool shouldLoop)
+{
+    segmentLooping = shouldLoop && hasMarkers();
+}
+
+void PlayerAudio::checkSegmentLooping()
+{
+    if (segmentLooping && hasMarkers() && transportSource.isPlaying())
+    {
+        double currentPos = transportSource.getCurrentPosition();
+
+
+        if (currentPos >= markerB)
+        {
+            transportSource.setPosition(markerA);
         }
     }
 }

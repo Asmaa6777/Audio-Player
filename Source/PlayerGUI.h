@@ -21,12 +21,15 @@ public:
         virtual void backwardButtonClicked() = 0;
         virtual void goToEndButtonClicked() = 0;
         virtual void positionSliderMoved(double newSeconds) = 0;
+        virtual void markerAButtonClicked() = 0;
+        virtual void markerBButtonClicked() = 0;
+        virtual void clearMarkersButtonClicked() = 0;
+        virtual void segmentLoopButtonClicked() = 0;
     };
 
     PlayerGUI();
     ~PlayerGUI() override;
-
-    void paint(juce::Graphics& g) override;
+     
     void resized() override;
 
     void buttonClicked(juce::Button* button) override;
@@ -39,6 +42,9 @@ public:
     void setVolumeLevel(float volume);
     void setMuteState(bool isMuted);
     void updatePositionDisplay(double currentSeconds, double totalSeconds);
+    void setMarkerAState(bool isSet);
+    void setMarkerBState(bool isSet);
+    void setSegmentLoopState(bool isActive);
 
 private:
     
@@ -66,6 +72,11 @@ private:
     bool isPlaying = false;
     bool isMuted = false;
     bool isLooping = false;
+
+    juce::TextButton markerAButton{ "set A" };
+    juce::TextButton markerBButton{ "set B" };
+    juce::TextButton clearMarkersButton{ "Clear" };
+    juce::TextButton segmentLoopButton{ "A-B Loop" };
 
     void loadButtonIcons();
 

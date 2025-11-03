@@ -1,16 +1,16 @@
-﻿#include "PlayerGUI.h"
+#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI()
 {
-    loadButtonIcons(); 
-  auto baseColour = juce::Colour(0xFF2B2B5E);     // deep space blue
-  auto accentColour = juce::Colour(0xFF6A5ACD);   // violet
-  auto activeColour = juce::Colour(0xFF9370DB);   // brighter purple
-  auto borderColour = juce::Colour(0xFF483D8B);   // slate
-  auto textColour = juce::Colour(0xFFB0AFFF);     // soft white-blue
-  auto sliderThumb = juce::Colour(0xFFAD8CFF);    // glowing lavender
+    loadButtonIcons();
+    auto baseColour = juce::Colour(0xFF2B2B5E);     // deep space blue
+    auto accentColour = juce::Colour(0xFF6A5ACD);   // violet
+    auto activeColour = juce::Colour(0xFF9370DB);   // brighter purple
+    auto borderColour = juce::Colour(0xFF483D8B);   // slate
+    auto textColour = juce::Colour(0xFFB0AFFF);     // soft white-blue
+    auto sliderThumb = juce::Colour(0xFFAD8CFF);    // glowing lavender
 
-     
+    // Load and Stop buttons (text buttons)
     for (auto* button : { &loadButton, &stopButton })
     {
         addAndMakeVisible(button);
@@ -21,9 +21,9 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
 
-     
+    // Icon buttons
     for (auto* button : { &muteButton, &restartButton, &backwardButton, &playButton,
-                          &forwardButton, &goToEndButton, &loopButton })
+                         &forwardButton, &goToEndButton, &loopButton })
     {
         addAndMakeVisible(button);
         button->addListener(this);
@@ -32,25 +32,36 @@ PlayerGUI::PlayerGUI()
         button->setAlpha(0.95f);
     }
 
-    
+    // A-B Segment Looping buttons - consistent purple styling
+    for (auto* button : { &markerAButton, &markerBButton, &clearMarkersButton, &segmentLoopButton })
+    {
+        addAndMakeVisible(button);
+        button->addListener(this);
+        button->setColour(juce::TextButton::buttonColourId, accentColour);
+        button->setColour(juce::TextButton::buttonOnColourId, activeColour);
+        button->setColour(juce::TextButton::textColourOffId, textColour);
+        button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    }
+
+    // Volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
     volumeSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
     volumeSlider.setColour(juce::Slider::thumbColourId, sliderThumb);
     volumeSlider.setColour(juce::Slider::trackColourId, accentColour);
-    volumeSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF)); // very light lavender
+    volumeSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF));
     volumeSlider.setColour(juce::Slider::textBoxTextColourId, textColour);
     volumeSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xFFF8F6FF));
     volumeSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0xFFD8BFD8));
     addAndMakeVisible(volumeSlider);
- 
+
     volumeLabel.setJustificationType(juce::Justification::centredLeft);
     volumeLabel.setText("Volume", juce::dontSendNotification);
     volumeLabel.setColour(juce::Label::textColourId, textColour);
     addAndMakeVisible(volumeLabel);
 
- 
+    // Position slider
     positionSlider.setRange(0.0, 1.0, 0.0001);
     positionSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -60,7 +71,7 @@ PlayerGUI::PlayerGUI()
     positionSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF));
     addAndMakeVisible(positionSlider);
 
-   
+    // Time labels
     currentTimeLabel.setText("0:00", juce::dontSendNotification);
     totalTimeLabel.setText("0:00", juce::dontSendNotification);
     currentTimeLabel.setJustificationType(juce::Justification::centred);
@@ -76,50 +87,26 @@ PlayerGUI::PlayerGUI()
 }
 
 PlayerGUI::~PlayerGUI() = default;
-
-void PlayerGUI::paint(juce::Graphics& g)
-{
-    // Create a dark-to-deep-blue gradient like a night sky
-    juce::ColourGradient spaceGradient(
-        juce::Colour::fromRGB(10, 10, 25), 0, 0,                // top (dark blue)
-        juce::Colour::fromRGB(0, 0, 0), 0, (float)getHeight(),  // bottom (black)
-        false);
-    g.setGradientFill(spaceGradient);
-    g.fillAll();
-
-    // Draw tiny stars randomly
-    for (int i = 0; i < 150; ++i)
-    {
-        float x = juce::Random::getSystemRandom().nextFloat() * getWidth();
-        float y = juce::Random::getSystemRandom().nextFloat() * getHeight();
-        float brightness = juce::Random::getSystemRandom().nextFloat() * 0.7f + 0.3f;
-
-        juce::Colour starColour = juce::Colours::white.withBrightness(brightness);
-        g.setColour(starColour);
-        g.fillEllipse(x, y, 1.5f, 1.5f); // small star
-    }
-
-    // Add a faint purple nebula glow
-    g.setColour(juce::Colour::fromRGBA(140, 120, 255, 40));
-    g.fillEllipse(getWidth() * 0.2f, getHeight() * 0.3f, 300, 180);
-
-    g.setColour(juce::Colour::fromRGBA(255, 200, 255, 25));
-    g.fillEllipse(getWidth() * 0.6f, getHeight() * 0.5f, 400, 220);
-
-    // Add an outer glow border for style
-    g.setColour(juce::Colour::fromRGB(80, 70, 160));
-    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(2.0f), 12.0f, 3.0f);
-}
-
-
+   
 void PlayerGUI::resized()
 {
-    const int y = 50;
-    const int buttonWidth = 70;
-    const int buttonHeight = 70;
-    const int spacing = 10;
+    auto area = getLocalBounds();
+    int margin = 10;
 
-    int x = 20;
+    // Main transport buttons row (top)
+    auto topRow = area.removeFromTop(80); // 80px height for main buttons
+    topRow.reduce(margin, margin);
+
+    int buttonWidth = 70;
+    int buttonHeight = 70;
+    int spacing = 10;
+
+    // Calculate dynamic button positions for main transport buttons
+    int totalButtonWidth = (buttonWidth + spacing) * 9 - spacing; // 9 main buttons
+    int startX = (topRow.getWidth() - totalButtonWidth) / 2; // Center the buttons
+
+    int x = startX;
+    int y = topRow.getY();
 
     loadButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     muteButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
@@ -131,17 +118,43 @@ void PlayerGUI::resized()
     loopButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     stopButton.setBounds(x, y, buttonWidth, buttonHeight);
 
-    int labelWidth = 100;
-    int labelHeight = 20;
-    int sliderHeight = 30;
+    // A-B Segment Looping buttons row (middle, centered)
+    auto middleRow = area.removeFromTop(40); // 40px height for A-B buttons
+    middleRow.reduce(margin, 0);
 
-    currentTimeLabel.setBounds(20, 135, labelWidth, labelHeight);
-    totalTimeLabel.setBounds(getWidth() - 20 - labelWidth, 135, labelWidth, labelHeight);
+    int abButtonWidth = 70;
+    int abButtonHeight = 30;
+    int abSpacing = 15;
 
-    positionSlider.setBounds(20 + labelWidth + 5, 135 - 5, getWidth() - (labelWidth * 2 + 50), sliderHeight);
+    // Calculate dynamic positions for A-B buttons
+    int totalABWidth = (abButtonWidth + abSpacing) * 4 - abSpacing; // 4 A-B buttons
+    int abStartX = (middleRow.getWidth() - totalABWidth) / 2; // Center the A-B buttons
 
-    volumeLabel.setBounds(20, 135 + 45, 100, 20);
-    volumeSlider.setBounds(20, 135 + 70, getWidth() - 40, 30);
+    int abX = abStartX;
+    int abY = middleRow.getY() + 5; // Slight vertical padding
+
+    markerAButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);        abX += abButtonWidth + abSpacing;
+    markerBButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);        abX += abButtonWidth + abSpacing;
+    clearMarkersButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);   abX += abButtonWidth + abSpacing;
+    segmentLoopButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);
+
+    // Bottom controls (position slider and volume)
+    auto bottomArea = area.reduced(margin);
+
+    // Position slider and time labels
+    int timeLabelWidth = 80;
+    int sliderHeight = 25;
+    int timeRowHeight = 30;
+
+    auto timeRow = bottomArea.removeFromTop(timeRowHeight);
+    currentTimeLabel.setBounds(timeRow.removeFromLeft(timeLabelWidth));
+    totalTimeLabel.setBounds(timeRow.removeFromRight(timeLabelWidth));
+    positionSlider.setBounds(timeRow);
+
+    // Volume controls
+    auto volumeRow = bottomArea.removeFromTop(40);
+    volumeLabel.setBounds(volumeRow.removeFromLeft(80));
+    volumeSlider.setBounds(volumeRow);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -157,6 +170,10 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &forwardButton)  listener->forwardButtonClicked();
     else if (button == &backwardButton) listener->backwardButtonClicked();
     else if (button == &goToEndButton)  listener->goToEndButtonClicked();
+    else if (button == &markerAButton)  listener->markerAButtonClicked();
+    else if (button == &markerBButton)  listener->markerBButtonClicked();
+    else if (button == &clearMarkersButton) listener->clearMarkersButtonClicked();
+    else if (button == &segmentLoopButton) listener->segmentLoopButtonClicked();
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -165,10 +182,9 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
         listener->volumeChanged((float)slider->getValue());
     else if (slider == &positionSlider && listener)
     {
-         
         double cur = positionSlider.getValue() * lastTotalSeconds;
         currentTimeLabel.setText(juce::String::formatted("%d:%02d", (int)(cur / 60.0), (int)((int)cur % 60)), juce::dontSendNotification);
- 
+
         double newSeconds = positionSlider.getValue() * lastTotalSeconds;
         listener->positionSliderMoved(newSeconds);
     }
@@ -209,11 +225,12 @@ void PlayerGUI::setLoopState(bool isLoopingNow)
 {
     isLooping = isLoopingNow;
     loopButton.setToggleState(isLooping, juce::dontSendNotification);
+   
+    auto accentColour = juce::Colour(0xFF6A5ACD);   
+    auto activeColour = juce::Colour(0xFF9370DB);
 
-    auto base = juce::Colour(0xFFB19CD9); // light purple
-    auto active = juce::Colour(0xFF9370DB); // medium purple  
-    loopButton.setColour(juce::DrawableButton::backgroundColourId, isLooping ? active : base);
-    loopButton.setColour(juce::DrawableButton::backgroundOnColourId, isLooping ? active : base);
+    loopButton.setColour(juce::DrawableButton::backgroundColourId, isLooping ? activeColour : accentColour);
+    loopButton.setColour(juce::DrawableButton::backgroundOnColourId, isLooping ? activeColour : accentColour);
 }
 
 void PlayerGUI::setPlaybackState(bool playing)
@@ -235,16 +252,13 @@ void PlayerGUI::setMuteState(bool isMutedNow)
 
 void PlayerGUI::updatePositionDisplay(double currentSeconds, double totalSeconds)
 {
-    
     lastTotalSeconds = totalSeconds;
 
-     
     if (totalSeconds > 0.0)
         positionSlider.setValue(currentSeconds / totalSeconds, juce::dontSendNotification);
     else
         positionSlider.setValue(0.0, juce::dontSendNotification);
 
-     
     auto formatTime = [](double s) -> juce::String {
         if (s <= 0.0 || !std::isfinite(s)) return "0:00";
         int total = (int)std::round(s);
@@ -255,4 +269,22 @@ void PlayerGUI::updatePositionDisplay(double currentSeconds, double totalSeconds
 
     currentTimeLabel.setText(formatTime(currentSeconds), juce::dontSendNotification);
     totalTimeLabel.setText(formatTime(totalSeconds), juce::dontSendNotification);
+}
+
+void PlayerGUI::setMarkerAState(bool isSet)
+{
+    markerAButton.setToggleState(isSet, juce::dontSendNotification);
+    // Colors are already set in constructor, toggle state handles the visual change
+}
+
+void PlayerGUI::setMarkerBState(bool isSet)
+{
+    markerBButton.setToggleState(isSet, juce::dontSendNotification);
+    // Colors are already set in constructor, toggle state handles the visual change
+}
+
+void PlayerGUI::setSegmentLoopState(bool isActive)
+{
+    segmentLoopButton.setToggleState(isActive, juce::dontSendNotification);
+    // Colors are already set in constructor, toggle state handles the visual change
 }

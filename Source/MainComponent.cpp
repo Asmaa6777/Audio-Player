@@ -1,23 +1,19 @@
 ﻿#include "MainComponent.h"
 #include <juce_data_structures/juce_data_structures.h>
 
-// ========================
-// Constructor
-// ========================
-
 MainComponent::MainComponent()
 {
-    // Create and configure the PropertiesFile for saving app state
     juce::PropertiesFile::Options options;
     options.applicationName = "MyAudioPlayer";
     options.filenameSuffix = ".settings";
-    options.osxLibrarySubFolder = "Application Support"; // for macOS, ignored on Windows/Linux
+    options.osxLibrarySubFolder = "Application Support";
     options.folderName = "MyAudioPlayerData";
     options.storageFormat = juce::PropertiesFile::storeAsXML;
 
     propertiesFile = std::make_unique<juce::PropertiesFile>(options);
 
-    // Restore last session if available
+    formatManager.registerBasicFormats();
+
     RestoreState();
 
     startTimerHz(10);
@@ -25,23 +21,15 @@ MainComponent::MainComponent()
     playerGUI.setListener(this);
 
     setAudioChannels(0, 2);
-    setSize(800, 250);
+    setSize(800, 400);
 }
 
-// ========================
-// Destructor
-// ========================
 MainComponent::~MainComponent()
 {
-    // Save state before shutting down audio
     SaveState();
-
     shutdownAudio();
 }
 
-// ========================
-// Audio setup
-// ========================
 void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     player.prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -62,12 +50,94 @@ void MainComponent::releaseResources()
 // ========================
 void MainComponent::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xFFF5F0FF)); // very light lavender
+    // === Galaxy Background ===
+    juce::ColourGradient bgGradient(
+        juce::Colour::fromRGB(5, 5, 15), 0, 0,                      // Deep space black at top
+        juce::Colour::fromRGB(20, 10, 35), 0, (float)getHeight(),   // Rich purple at bottom
+        false);
+    g.setGradientFill(bgGradient);
+    g.fillAll();
+
+    // === Hundreds of Small Stars ===
+    g.setColour(juce::Colours::white);
+    for (int i = 0; i < 300; ++i)
+    {
+        float x = juce::Random::getSystemRandom().nextFloat() * getWidth();
+        float y = juce::Random::getSystemRandom().nextFloat() * getHeight();
+        float brightness = juce::Random::getSystemRandom().nextFloat() * 0.9f + 0.1f;
+        float size = juce::Random::getSystemRandom().nextFloat() * 1.5f + 0.5f;
+
+        juce::Colour starColour = juce::Colours::white.withBrightness(brightness);
+        g.setColour(starColour);
+        g.fillEllipse(x, y, size, size);
+    }
+
+    // === Add Galactic Nebula Effects ===
+    g.setColour(juce::Colour::fromRGBA(80, 60, 150, 30));
+    g.fillEllipse(getWidth() * 0.3f, getHeight() * 0.2f, 250, 150);
+
+    g.setColour(juce::Colour::fromRGBA(120, 80, 180, 25));
+    g.fillEllipse(getWidth() * 0.6f, getHeight() * 0.6f, 300, 200);
+
+    // === Waveform Area - Slightly bigger but still contained ===
+    auto waveformArea = getLocalBounds().removeFromTop(70).reduced(20, 8); // A bit more height
+
+    if (showWaveform && thumbnail.getTotalLength() > 0.0)
+    {
+        // Subtle border
+        g.setColour(juce::Colours::white.withAlpha(0.2f));
+        g.drawRoundedRectangle(waveformArea.toFloat(), 4.0f, 1.0f);
+
+        // Draw waveform - Slightly bigger but still fits
+        juce::ColourGradient waveformGradient(
+            juce::Colours::cyan.withAlpha(0.8f), (float)waveformArea.getX(), (float)waveformArea.getCentreY(),
+            juce::Colours::magenta.withAlpha(0.8f), (float)waveformArea.getRight(), (float)waveformArea.getCentreY(),
+            false);
+        g.setGradientFill(waveformGradient);
+
+        // Slightly less reduction for bigger waveform
+        auto waveformDrawArea = waveformArea.reduced(4, 10); // Less padding than before
+        thumbnail.drawChannel(g, waveformDrawArea, 0.0, thumbnail.getTotalLength(), 0, 0.85f); // Increased amplitude
+
+        // Draw current playback cursor
+        double position = player.getCurrentPosition();
+        double totalLen = thumbnail.getTotalLength();
+        double proportion = (totalLen > 0.0) ? (position / totalLen) : 0.0;
+        float x = (float)waveformArea.getX() + (float)(proportion * waveformArea.getWidth());
+
+        g.setColour(juce::Colours::white);
+        g.drawLine(x, (float)waveformArea.getY(), x, (float)waveformArea.getBottom(), 2.0f);
+    }
+    else
+    {
+        // No file loaded
+        g.setColour(juce::Colours::white.withAlpha(0.4f));
+        g.setFont(14.0f);
+        g.drawText("Load audio file to see waveform", waveformArea, juce::Justification::centred);
+    }
+
+    // === Tiny Cosmic Dust ===
+    g.setColour(juce::Colours::white.withAlpha(0.15f));
+    for (int i = 0; i < 400; ++i)
+    {
+        float x = juce::Random::getSystemRandom().nextFloat() * getWidth();
+        float y = juce::Random::getSystemRandom().nextFloat() * getHeight();
+        g.fillEllipse(x, y, 0.3f, 0.3f);
+    }
+
+    // === Galactic Border ===
+    juce::ColourGradient borderGradient(
+        juce::Colours::indigo.withAlpha(0.7f), 0, 0,
+        juce::Colour::fromRGB(100, 60, 150).withAlpha(0.7f), 0, (float)getHeight(),
+        false);
+    g.setGradientFill(borderGradient);
+    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f), 8.0f, 1.5f);
 }
 
 void MainComponent::resized()
 {
-    playerGUI.setBounds(getLocalBounds());
+    // PlayerGUI takes the middle area (below waveform, above bottom)
+    playerGUI.setBounds(getLocalBounds().withTrimmedTop(110).withTrimmedBottom(10));
 }
 
 // ========================
@@ -90,6 +160,12 @@ void MainComponent::loadButtonClicked()
                 playerGUI.setPlaybackState(false);
                 playerGUI.setLoopState(player.isLoopingEnabled());
                 playerGUI.setMuteState(isMuted);
+
+                // === Load waveform ===
+                thumbnail.setSource(new juce::FileInputSource(file));
+                showWaveform = true;
+
+                repaint();
             }
         });
 }
@@ -174,11 +250,10 @@ void MainComponent::positionSliderMoved(double newSeconds)
     playerGUI.setPlaybackState(player.isPlaying());
 }
 
-// ========================
-// Timer
-// ========================
 void MainComponent::timerCallback()
 {
+    repaint();
+
     double total = player.getLengthInSeconds();
     double current = player.getCurrentPosition();
 
@@ -187,11 +262,12 @@ void MainComponent::timerCallback()
 
     playerGUI.updatePositionDisplay(current, total);
     playerGUI.setPlaybackState(player.isPlaying());
+
+    playerGUI.setMarkerAState(player.getMarkerA() >= 0);
+    playerGUI.setMarkerBState(player.getMarkerB() >= 0);
+    playerGUI.setSegmentLoopState(player.isSegmentLooping());
 }
 
-// ========================
-// State Saving / Loading
-// ========================
 void MainComponent::SaveState()
 {
     if (propertiesFile)
@@ -201,5 +277,53 @@ void MainComponent::SaveState()
 void MainComponent::RestoreState()
 {
     if (propertiesFile)
+    {
         player.RestoreState(*propertiesFile, "player");
+
+        juce::String lastFilePath = propertiesFile->getValue("player_lastFile");
+        juce::File lastFile(lastFilePath);
+
+        if (lastFile.existsAsFile())
+        {
+            thumbnail.setSource(new juce::FileInputSource(lastFile));
+            showWaveform = true;
+        }
+        else
+        {
+            showWaveform = false;
+        }
+    }
+}
+
+void MainComponent::markerAButtonClicked()
+{
+    player.setMarkerA();
+    playerGUI.setMarkerAState(player.getMarkerA() >= 0);
+}
+
+void MainComponent::markerBButtonClicked()
+{
+    player.setMarkerB();
+    playerGUI.setMarkerBState(player.getMarkerB() >= 0);
+}
+
+void MainComponent::clearMarkersButtonClicked()
+{
+    player.clearMarkers();
+    playerGUI.setMarkerAState(false);
+    playerGUI.setMarkerBState(false);
+    playerGUI.setSegmentLoopState(false);
+}
+
+void MainComponent::segmentLoopButtonClicked()
+{
+    bool newState = !player.isSegmentLooping();
+    player.setSegmentLooping(newState);
+    playerGUI.setSegmentLoopState(newState);
+
+    if (newState)
+    {
+        player.toggleLooping();
+        playerGUI.setLoopState(false);
+    }
 }

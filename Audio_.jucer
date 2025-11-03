@@ -5,6 +5,7 @@
   <MAINGROUP id="ulQ2jE" name="Audio_">
     <GROUP id="{B0DD7419-0740-40B3-7AB0-778B4D3AA3CC}" name="Assest">
       <GROUP id="{85F3592D-F4D1-7506-7D01-FB06AF051B21}" name="Icons">
+        <FILE id="ZexYA2" name="album.jpg" compile="0" resource="1" file="Assest/Icons/album.jpg"/>
         <FILE id="ZyZ1wj" name="back10.jpg" compile="0" resource="1" file="Assest/Icons/back10.jpg"/>
         <FILE id="ECXR4E" name="forward10.jpg" compile="0" resource="1" file="Assest/Icons/forward10.jpg"/>
         <FILE id="RFQCoF" name="gotoend.jpg" compile="0" resource="1" file="Assest/Icons/gotoend.jpg"/>

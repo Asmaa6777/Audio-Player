@@ -8,6 +8,9 @@
 
 namespace BinaryData
 {
+    extern const char*   album_jpg;
+    const int            album_jpgSize = 12837;
+
     extern const char*   back10_jpg;
     const int            back10_jpgSize = 2113;
 
@@ -39,31 +42,31 @@ namespace BinaryData
     const int            AudioGUI_cppSize = 276;
 
     extern const char*   AudioGUI_h;
-    const int            AudioGUI_hSize = 1874;
+    const int            AudioGUI_hSize = 925;
 
     extern const char*   Main_cpp;
     const int            Main_cppSize = 1186;
 
     extern const char*   MainComponent_cpp;
-    const int            MainComponent_cppSize = 1556;
+    const int            MainComponent_cppSize = 5433;
 
     extern const char*   MainComponent_h;
-    const int            MainComponent_hSize = 925;
+    const int            MainComponent_hSize = 1728;
 
     extern const char*   PlayerAudio_cpp;
-    const int            PlayerAudio_cppSize = 2677;
+    const int            PlayerAudio_cppSize = 4441;
 
     extern const char*   PlayerAudio_h;
-    const int            PlayerAudio_hSize = 849;
+    const int            PlayerAudio_hSize = 1895;
 
     extern const char*   PlayerGUI_cpp;
-    const int            PlayerGUI_cppSize = 5566;
+    const int            PlayerGUI_cppSize = 14177;
 
     extern const char*   PlayerGUI_h;
-    const int            PlayerGUI_hSize = 2067;
+    const int            PlayerGUI_hSize = 3095;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 18;
+    const int namedResourceListSize = 19;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

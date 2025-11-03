@@ -14,7 +14,7 @@ public:
     // AudioAppComponent
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
-    void releaseResources() override;   
+    void releaseResources() override;
 
     // GUI
     void paint(juce::Graphics&) override;
@@ -31,10 +31,14 @@ public:
     void forwardButtonClicked() override;
     void backwardButtonClicked() override;
     void goToEndButtonClicked() override;
-    void positionSliderMoved(double newSeconds) override;   
+    void positionSliderMoved(double newSeconds) override;
     void timerCallback() override;
     void SaveState();
     void RestoreState();
+    void markerAButtonClicked() override;
+    void markerBButtonClicked() override;
+    void clearMarkersButtonClicked() override;
+    void segmentLoopButtonClicked() override;
 
 private:
     void toggleMute();
@@ -44,9 +48,15 @@ private:
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<juce::PropertiesFile> propertiesFile;
 
-
     bool isMuted = false;
     float previousVolume = 1.0f;
+
+    // === Waveform & Rotating CD Image ===
+    juce::AudioFormatManager formatManager;
+    juce::AudioThumbnailCache thumbnailCache{ 5 };
+    juce::AudioThumbnail thumbnail{ 512, formatManager, thumbnailCache };
+
+    bool showWaveform = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

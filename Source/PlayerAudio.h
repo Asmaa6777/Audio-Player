@@ -30,8 +30,17 @@ public:
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
 	void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 	void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
-	void markerJump(int markerIndex);
 
+    void setMarkerA();
+    void setMarkerB();
+    void clearMarkers();
+    bool isSegmentLooping() const { return segmentLooping; }
+    void setSegmentLooping(bool shouldLoop);
+    double getMarkerA() const { return markerA; }
+    double getMarkerB() const { return markerB; }
+    bool hasMarkers() const { return markerA >= 0 && markerB > markerA; }
+    void checkSegmentLooping();
+   
 
 private:
     juce::AudioFormatManager formatManager;
@@ -40,5 +49,10 @@ private:
 
     bool isLooping = false;
     float currentVolume = 1.0f;
+
+    double markerA = -1.0;
+    double markerB = -1.0;
+    bool segmentLooping = false;
+
     juce::File currentFile;
 };
