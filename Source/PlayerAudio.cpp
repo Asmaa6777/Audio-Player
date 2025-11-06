@@ -25,6 +25,9 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
         // Reset slice state when new file is loaded
         sliceReady = false;
         audioSlice.setSize(0, 0);
+
+        // Clear markers when new file is loaded
+        clearAllMarkers();
     }
 }
 
@@ -77,7 +80,7 @@ bool PlayerAudio::isPlaying() const
 
 void PlayerAudio::setVolume(float newVolume)
 {
-    currentVolume = juce::jlimit(0.0f, 1.0f, newVolume);  // clamp for safety
+    currentVolume = juce::jlimit(0.0f, 1.0f, newVolume);
     transportSource.setGain(currentVolume);
 }
 
@@ -254,4 +257,49 @@ juce::String PlayerAudio::getSliceInfo() const
     double duration = sliceEnd - sliceStart;
     return juce::String::formatted("Slice: %.1fs - %.1fs (%.1fs)",
         sliceStart, sliceEnd, duration);
+}
+
+// Track Markers Implementation
+void PlayerAudio::addMarker(double time, const juce::String& name) {
+    Marker newMarker;
+    newMarker.time = time;
+
+    if (name.isEmpty()) {
+        newMarker.name = "Marker " + juce::String(markers.size() + 1);
+    }
+    else {
+        newMarker.name = name;
+    }
+
+    markers.add(newMarker);
+    std::sort(markers.begin(), markers.end());
+    sendChangeMessage(); // Notify GUI to update
+}
+
+void PlayerAudio::removeMarker(int index) {
+    if (index >= 0 && index < markers.size()) {
+        markers.remove(index);
+        sendChangeMessage(); // Notify GUI to update
+    }
+}
+
+void PlayerAudio::jumpToMarker(int index) {
+    if (index >= 0 && index < markers.size()) {
+        transportSource.setPosition(markers[index].time);
+    }
+}
+
+void PlayerAudio::clearAllMarkers() {
+    markers.clear();
+    sendChangeMessage(); // Notify GUI to update
+}
+
+juce::String PlayerAudio::getMarkerInfo(int index) const {
+    if (index >= 0 && index < markers.size()) {
+        int minutes = static_cast<int>(markers[index].time) / 60;
+        int seconds = static_cast<int>(markers[index].time) % 60;
+        juce::String timeString = juce::String::formatted("%02d:%02d", minutes, seconds);
+        return markers[index].name + " (" + timeString + ")";
+    }
+    return "";
 }

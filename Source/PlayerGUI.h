@@ -3,7 +3,9 @@
 
 class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
-    public juce::Slider::Listener
+    public juce::Slider::Listener,
+    public juce::ChangeListener,
+    public juce::ListBoxModel
 {
 public:
     class Listener
@@ -27,17 +29,22 @@ public:
         virtual void segmentLoopButtonClicked() = 0;
         virtual void sliceButtonClicked() = 0;
         virtual void saveSliceButtonClicked() = 0;
+        // New marker functions
+        virtual void addMarkerButtonClicked() = 0;
+        virtual void deleteMarkerButtonClicked() = 0;
+        virtual void jumpToMarker(int index) = 0;
     };
 
     PlayerGUI();
     ~PlayerGUI() override;
 
     void setSliceState(bool hasSlice);
-     
+
     void resized() override;
 
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
     void setListener(Listener* newListener);
 
@@ -50,8 +57,16 @@ public:
     void setMarkerBState(bool isSet);
     void setSegmentLoopState(bool isActive);
 
+    // ListBoxModel implementation
+    int getNumRows() override;
+    void paintListBoxItem(int rowNumber, juce::Graphics& g,
+        int width, int height, bool rowIsSelected) override;
+    void listBoxItemClicked(int row, const juce::MouseEvent& event) override;
+
+    // Public access to markers list for MainComponent
+    juce::ListBox& getMarkersList() { return markersList; }
+
 private:
-    
     juce::DrawableButton muteButton{ "Mute",     juce::DrawableButton::ImageFitted };
     juce::DrawableButton restartButton{ "Restart",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton backwardButton{ "Back10",   juce::DrawableButton::ImageFitted };
@@ -59,7 +74,7 @@ private:
     juce::DrawableButton forwardButton{ "Forward10",juce::DrawableButton::ImageFitted };
     juce::DrawableButton goToEndButton{ "GoToEnd",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton loopButton{ "Loop",     juce::DrawableButton::ImageFitted };
-     
+
     juce::TextButton loadButton{ "Load" };
     juce::TextButton stopButton{ "Stop" };
 
@@ -85,6 +100,11 @@ private:
     juce::TextButton sliceButton{ "Create A-B Slice" };
     juce::TextButton saveSliceButton{ "Save Slice" };
     juce::Label sliceInfoLabel;
+
+    // Track Markers controls
+    juce::TextButton addMarkerButton{ "Add Marker" };
+    juce::TextButton deleteMarkerButton{ "Delete Marker" };
+    juce::ListBox markersList;
 
     void loadButtonIcons();
 

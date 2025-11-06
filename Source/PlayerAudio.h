@@ -2,6 +2,8 @@
 #include <JuceHeader.h>
 
 class PlayerAudio
+    : public juce::AudioSource,
+    public juce::ChangeBroadcaster
 {
 public:
     PlayerAudio();
@@ -41,10 +43,25 @@ public:
     void checkSegmentLooping();
 
     // Audio Slicing methods
-       bool createSliceFromMarkers();
+    bool createSliceFromMarkers();
     bool saveSliceToFile(const juce::File& outputFile);
     bool hasValidSlice() const;
     juce::String getSliceInfo() const;
+
+    // Track Markers functionality
+    struct Marker {
+        double time;
+        juce::String name;
+        bool operator<(const Marker& other) const {
+            return time < other.time;
+        }
+    };
+    void addMarker(double time, const juce::String& name = "");
+    void removeMarker(int index);
+    void jumpToMarker(int index);
+    void clearAllMarkers();
+    const juce::Array<Marker>& getMarkers() const { return markers; }
+    juce::String getMarkerInfo(int index) const;
 
 private:
     juce::AudioFormatManager formatManager;
@@ -65,4 +82,7 @@ private:
     bool sliceReady = false;
     double sliceStart = 0.0;
     double sliceEnd = 0.0;
+
+    // Track markers
+    juce::Array<Marker> markers;
 };

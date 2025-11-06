@@ -1,27 +1,28 @@
 #pragma once
-
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
 #include "PlayerGUI.h"
 
 class MainComponent : public juce::AudioAppComponent,
     public PlayerGUI::Listener,
-    public juce::Timer
+    public juce::ChangeListener,
+    public juce::Timer,
+    public juce::ListBoxModel
 {
 public:
     MainComponent();
     ~MainComponent() override;
 
-    // ========== Component pure virtual functions ==========
-    void paint(juce::Graphics& g) override;
-    void resized() override;
-
-    // ========== AudioAppComponent pure virtual functions ==========
+    // Audio callbacks
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
-    // ========== PlayerGUI::Listener callbacks - ALL REQUIRED ==========
+    // GUI
+    void paint(juce::Graphics&) override;
+    void resized() override;
+
+    // PlayerGUI::Listener implementations
     void loadButtonClicked() override;
     void playButtonClicked() override;
     void stopButtonClicked() override;
@@ -38,32 +39,43 @@ public:
     void clearMarkersButtonClicked() override;
     void segmentLoopButtonClicked() override;
     void sliceButtonClicked() override;
-    void saveSliceButtonClicked() override; 
+    void saveSliceButtonClicked() override;
 
-    // ========== Timer pure virtual function ==========
+    // New marker functions
+    void addMarkerButtonClicked() override;
+    void deleteMarkerButtonClicked() override;
+    void jumpToMarker(int index) override;
+
     void timerCallback() override;
 
-    // ========== Other methods ==========
-    void SaveState();
-    void RestoreState();
+    // ListBoxModel implementation for markers
+    int getNumRows() override;
+    void paintListBoxItem(int rowNumber, juce::Graphics& g,
+        int width, int height, bool rowIsSelected) override;
+    void listBoxItemClicked(int row, const juce::MouseEvent& event) override;
+
+    // ChangeListener for marker updates
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
-    void toggleMute();
-    void updateSliceState();
-
     PlayerAudio player;
     PlayerGUI playerGUI;
+
+    juce::AudioFormatManager formatManager;
+    juce::AudioThumbnailCache thumbnailCache{ 1 };
+    juce::AudioThumbnail thumbnail{ 512, formatManager, thumbnailCache };
+    bool showWaveform = false;
+
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<juce::PropertiesFile> propertiesFile;
 
     bool isMuted = false;
-    float previousVolume = 1.0f;
+    float previousVolume = 0.5f;
 
-    juce::AudioFormatManager formatManager;
-    juce::AudioThumbnailCache thumbnailCache{ 5 };
-    juce::AudioThumbnail thumbnail{ 512, formatManager, thumbnailCache };
-
-    bool showWaveform = false;
+    void toggleMute();
+    void SaveState();
+    void RestoreState();
+    void updateSliceState();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

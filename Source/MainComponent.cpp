@@ -21,8 +21,14 @@ MainComponent::MainComponent()
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
 
+    // Set the MainComponent as the model for the markers list
+    playerGUI.getMarkersList().setModel(this);
+
+    // Listen for marker changes from PlayerAudio
+    player.addChangeListener(this);
+
     setAudioChannels(0, 2);
-    setSize(800, 400);
+    setSize(800, 600); // Increased height to accommodate markers section
 }
 
 MainComponent::~MainComponent()
@@ -46,15 +52,12 @@ void MainComponent::releaseResources()
     player.releaseResources();
 }
 
-// ========================
-// GUI
-// ========================
 void MainComponent::paint(juce::Graphics& g)
 {
     // === Galaxy Background ===
     juce::ColourGradient bgGradient(
-        juce::Colour::fromRGB(5, 5, 15), 0, 0,                      // Deep space black at top
-        juce::Colour::fromRGB(20, 10, 35), 0, (float)getHeight(),   // Rich purple at bottom
+        juce::Colour::fromRGB(5, 5, 15), 0, 0,
+        juce::Colour::fromRGB(20, 10, 35), 0, (float)getHeight(),
         false);
     g.setGradientFill(bgGradient);
     g.fillAll();
@@ -80,8 +83,8 @@ void MainComponent::paint(juce::Graphics& g)
     g.setColour(juce::Colour::fromRGBA(120, 80, 180, 25));
     g.fillEllipse(getWidth() * 0.6f, getHeight() * 0.6f, 300, 200);
 
-    // === Waveform Area - Slightly bigger but still contained ===
-    auto waveformArea = getLocalBounds().removeFromTop(70).reduced(20, 8); // A bit more height
+    // === Waveform Area ===
+    auto waveformArea = getLocalBounds().removeFromTop(70).reduced(20, 8);
 
     if (showWaveform && thumbnail.getTotalLength() > 0.0)
     {
@@ -89,21 +92,36 @@ void MainComponent::paint(juce::Graphics& g)
         g.setColour(juce::Colours::white.withAlpha(0.2f));
         g.drawRoundedRectangle(waveformArea.toFloat(), 4.0f, 1.0f);
 
-        // Draw waveform - Slightly bigger but still fits
+        // Draw waveform
         juce::ColourGradient waveformGradient(
             juce::Colours::cyan.withAlpha(0.8f), (float)waveformArea.getX(), (float)waveformArea.getCentreY(),
             juce::Colours::magenta.withAlpha(0.8f), (float)waveformArea.getRight(), (float)waveformArea.getCentreY(),
             false);
         g.setGradientFill(waveformGradient);
 
-        // Slightly less reduction for bigger waveform
-        auto waveformDrawArea = waveformArea.reduced(4, 10); // Less padding than before
-        thumbnail.drawChannel(g, waveformDrawArea, 0.0, thumbnail.getTotalLength(), 0, 0.85f); // Increased amplitude
+        auto waveformDrawArea = waveformArea.reduced(4, 10);
+        thumbnail.drawChannel(g, waveformDrawArea, 0.0, thumbnail.getTotalLength(), 0, 0.85f);
 
-        // Draw current playback cursor
+        // Draw markers on the waveform
+        auto& markers = player.getMarkers();
+        double totalLength = thumbnail.getTotalLength();
+
+        for (const auto& marker : markers)
+        {
+            float xPos = (float)(marker.time / totalLength) * waveformArea.getWidth() + waveformArea.getX();
+
+            // Draw marker line
+            g.setColour(juce::Colours::yellow);
+            g.drawLine(xPos, (float)waveformArea.getY(), xPos, (float)waveformArea.getBottom(), 2.0f);
+
+            // Draw marker dot
+            g.setColour(juce::Colours::orange);
+            g.fillEllipse(xPos - 3, waveformArea.getBottom() - 8, 6, 6);
+        }
+
+        // Draw current playback cursor (after markers so it's on top)
         double position = player.getCurrentPosition();
-        double totalLen = thumbnail.getTotalLength();
-        double proportion = (totalLen > 0.0) ? (position / totalLen) : 0.0;
+        double proportion = (totalLength > 0.0) ? (position / totalLength) : 0.0;
         float x = (float)waveformArea.getX() + (float)(proportion * waveformArea.getWidth());
 
         g.setColour(juce::Colours::white);
@@ -141,9 +159,7 @@ void MainComponent::resized()
     playerGUI.setBounds(getLocalBounds().withTrimmedTop(110).withTrimmedBottom(10));
 }
 
-// ========================
 // GUI Button Actions
-// ========================
 void MainComponent::loadButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
@@ -162,7 +178,7 @@ void MainComponent::loadButtonClicked()
                 playerGUI.setLoopState(player.isLoopingEnabled());
                 playerGUI.setMuteState(isMuted);
 
-                // === Load waveform ===
+                // Load waveform
                 thumbnail.setSource(new juce::FileInputSource(file));
                 showWaveform = true;
 
@@ -303,14 +319,14 @@ void MainComponent::markerAButtonClicked()
 {
     player.setMarkerA();
     playerGUI.setMarkerAState(player.getMarkerA() >= 0);
-    updateSliceState(); // Update slice state when markers change
+    updateSliceState();
 }
 
 void MainComponent::markerBButtonClicked()
 {
     player.setMarkerB();
     playerGUI.setMarkerBState(player.getMarkerB() >= 0);
-    updateSliceState(); // Update slice state when markers change
+    updateSliceState();
 }
 
 void MainComponent::clearMarkersButtonClicked()
@@ -319,7 +335,7 @@ void MainComponent::clearMarkersButtonClicked()
     playerGUI.setMarkerAState(false);
     playerGUI.setMarkerBState(false);
     playerGUI.setSegmentLoopState(false);
-    updateSliceState(); // Update slice state when markers are cleared
+    updateSliceState();
 }
 
 void MainComponent::segmentLoopButtonClicked()
@@ -335,10 +351,7 @@ void MainComponent::segmentLoopButtonClicked()
     }
 }
 
-// ========================
 // Slicing Functionality
-// ========================
-
 void MainComponent::sliceButtonClicked()
 {
     if (player.createSliceFromMarkers())
@@ -359,7 +372,7 @@ void MainComponent::sliceButtonClicked()
     }
 }
 
-void MainComponent:: saveSliceButtonClicked()
+void MainComponent::saveSliceButtonClicked()
 {
     if (!player.hasValidSlice())
     {
@@ -380,7 +393,6 @@ void MainComponent:: saveSliceButtonClicked()
             auto file = chooser.getResult();
             if (file != juce::File{})
             {
-                // Ensure the file has .wav extension
                 if (!file.hasFileExtension(".wav"))
                 {
                     file = file.withFileExtension(".wav");
@@ -405,4 +417,69 @@ void MainComponent:: saveSliceButtonClicked()
 void MainComponent::updateSliceState()
 {
     playerGUI.setSliceState(player.hasValidSlice());
+}
+
+// Track Markers Functionality
+void MainComponent::addMarkerButtonClicked()
+{
+    double currentTime = player.getCurrentPosition();
+    player.addMarker(currentTime);
+}
+
+void MainComponent::deleteMarkerButtonClicked()
+{
+    int selectedRow = playerGUI.getMarkersList().getSelectedRow();
+    if (selectedRow >= 0)
+    {
+        player.removeMarker(selectedRow);
+    }
+}
+
+void MainComponent::jumpToMarker(int index)
+{
+    player.jumpToMarker(index);
+}
+
+// ListBoxModel implementation for markers
+int MainComponent::getNumRows()
+{
+    return player.getMarkers().size();
+}
+
+void MainComponent::paintListBoxItem(int rowNumber, juce::Graphics& g,
+    int width, int height, bool rowIsSelected)
+{
+    auto& markers = player.getMarkers();
+
+    if (rowNumber < markers.size())
+    {
+        if (rowIsSelected)
+            g.fillAll(juce::Colour(0xFF9370DB)); // Use your active colour
+
+        g.setColour(juce::Colour(0xFFB0AFFF)); // Use your text colour
+
+        // Format time as MM:SS
+        int minutes = static_cast<int>(markers[rowNumber].time) / 60;
+        int seconds = static_cast<int>(markers[rowNumber].time) % 60;
+        juce::String timeString = juce::String::formatted("%02d:%02d", minutes, seconds);
+
+        g.drawText(markers[rowNumber].name + " - " + timeString,
+            5, 0, width - 5, height,
+            juce::Justification::centredLeft);
+    }
+}
+
+void MainComponent::listBoxItemClicked(int row, const juce::MouseEvent& event)
+{
+    jumpToMarker(row);
+}
+
+void MainComponent::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (source == &player)
+    {
+        // Update the markers list when markers change
+        playerGUI.getMarkersList().updateContent();
+        playerGUI.getMarkersList().repaint();
+    }
 }
