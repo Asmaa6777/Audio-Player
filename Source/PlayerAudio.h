@@ -63,6 +63,17 @@ public:
     const juce::Array<Marker>& getMarkers() const { return markers; }
     juce::String getMarkerInfo(int index) const;
 
+    // New: Metadata support
+    struct Metadata {
+        juce::String title;
+        juce::String artist;
+        juce::String album;
+        juce::String year;
+        juce::String filename;
+        double duration;
+    };
+    Metadata getMetadata() const { return metadata; }
+
 private:
     juce::AudioFormatManager formatManager;
     juce::AudioTransportSource transportSource;
@@ -85,4 +96,7 @@ private:
 
     // Track markers
     juce::Array<Marker> markers;
+
+    // New: Metadata
+    Metadata metadata;
 };

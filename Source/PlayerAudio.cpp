@@ -28,6 +28,24 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
 
         // Clear markers when new file is loaded
         clearAllMarkers();
+
+        // New: Extract metadata
+        metadata = Metadata();
+        metadata.filename = audioFile.getFileName();
+        metadata.duration = reader->lengthInSamples / reader->sampleRate;
+
+        // Try to extract metadata from tags
+        auto& metadataValues = reader->metadataValues;
+        metadata.title = metadataValues.getValue("Title", "");
+        metadata.artist = metadataValues.getValue("Artist", "");
+        metadata.album = metadataValues.getValue("Album", "");
+        metadata.year = metadataValues.getValue("Year", "");
+
+        // If no title metadata, use filename without extension
+        if (metadata.title.isEmpty())
+            metadata.title = audioFile.getFileNameWithoutExtension();
+
+        sendChangeMessage(); // Notify that metadata is updated
     }
 }
 

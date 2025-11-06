@@ -4,8 +4,8 @@
 class SimpleAudioPlayer : public juce::JUCEApplication
 {
 public:
-    const juce::String getApplicationName() override { return "Simple Audio Player"; }
-    const juce::String getApplicationVersion() override { return "1.0"; }
+    const juce::String getApplicationName() override { return "Advanced Audio Player"; }
+    const juce::String getApplicationVersion() override { return "2.0"; }
     bool moreThanOneInstanceAllowed() override { return true; }
 
     void initialise(const juce::String& commandLine) override
@@ -46,30 +46,23 @@ private:
     public:
         MainWindow(juce::String name)
             : DocumentWindow(name,
-                juce::Colours::darkgrey,  // More neutral default color
+                juce::Colours::darkgrey,
                 DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true);
 
-            // Set a more reasonable minimum size
+            // Set a more reasonable minimum size for two players
             setResizable(true, true);
-            setResizeLimits(600, 400, 1200, 800);
+            setResizeLimits(800, 600, 1600, 1200);
 
-            centreWithSize(800, 400);
+            centreWithSize(1000, 800);
             setVisible(true);
         }
 
         void closeButtonPressed() override
         {
             juce::JUCEApplication::getInstance()->systemRequestedQuit();
-        }
-
-        // Optional: Handle window resizing more gracefully
-        void resized() override
-        {
-            DocumentWindow::resized();
-            // Any additional window-level resizing logic can go here
         }
 
     private:

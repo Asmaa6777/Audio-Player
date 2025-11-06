@@ -58,8 +58,11 @@ public:
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
-    PlayerAudio player;
-    PlayerGUI playerGUI;
+    // New: Two players for multiple players feature
+    PlayerAudio player1;
+    PlayerAudio player2;
+    PlayerGUI playerGUI1;
+    PlayerGUI playerGUI2;
 
     juce::AudioFormatManager formatManager;
     juce::AudioThumbnailCache thumbnailCache{ 1 };
@@ -72,10 +75,17 @@ private:
     bool isMuted = false;
     float previousVolume = 0.5f;
 
+    // New: Track which player is active
+    int activePlayer = 1;
+
     void toggleMute();
     void SaveState();
     void RestoreState();
     void updateSliceState();
+    void updateMetadataDisplay();
+
+    // New: Audio mixing for multiple players
+    juce::MixerAudioSource mixerAudioSource;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

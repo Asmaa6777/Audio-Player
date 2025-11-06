@@ -66,6 +66,9 @@ public:
     // Public access to markers list for MainComponent
     juce::ListBox& getMarkersList() { return markersList; }
 
+    // New: Metadata display
+    void setMetadataDisplay(const juce::String& metadataText);
+
 private:
     juce::DrawableButton muteButton{ "Mute",     juce::DrawableButton::ImageFitted };
     juce::DrawableButton restartButton{ "Restart",  juce::DrawableButton::ImageFitted };
@@ -105,6 +108,9 @@ private:
     juce::TextButton addMarkerButton{ "Add Marker" };
     juce::TextButton deleteMarkerButton{ "Delete Marker" };
     juce::ListBox markersList;
+
+    // New: Metadata display
+    juce::Label metadataLabel;
 
     void loadButtonIcons();
 

@@ -10,6 +10,12 @@ PlayerGUI::PlayerGUI()
     auto textColour = juce::Colour(0xFFB0AFFF);     // soft white-blue
     auto sliderThumb = juce::Colour(0xFFAD8CFF);    // glowing lavender
 
+    // New: Metadata label
+    metadataLabel.setJustificationType(juce::Justification::centred);
+    metadataLabel.setColour(juce::Label::textColourId, textColour);
+    metadataLabel.setText("No file loaded", juce::dontSendNotification);
+    addAndMakeVisible(metadataLabel);
+
     // Load and Stop buttons (text buttons)
     for (auto* button : { &loadButton, &stopButton })
     {
@@ -136,13 +142,17 @@ PlayerGUI::~PlayerGUI() = default;
 void PlayerGUI::resized()
 {
     auto area = getLocalBounds();
-    int margin = 8; // Reduced margin for more space
+    int margin = 8;
+
+    // === 0. Metadata Display (New) ===
+    auto metadataRow = area.removeFromTop(25);
+    metadataLabel.setBounds(metadataRow.reduced(5, 2));
 
     // === 1. Main Transport Buttons (Top Row) ===
-    auto topRow = area.removeFromTop(70); // Reduced from 80
+    auto topRow = area.removeFromTop(70);
     topRow.reduce(margin, 5);
 
-    int buttonWidth = 65; // Slightly smaller buttons
+    int buttonWidth = 65;
     int buttonHeight = 65;
     int spacing = 8;
 
@@ -151,7 +161,7 @@ void PlayerGUI::resized()
     int startX = (topRow.getWidth() - totalButtonWidth) / 2;
 
     int x = startX;
-    int y = topRow.getY() + 2; // Slight vertical adjustment
+    int y = topRow.getY() + 2;
 
     loadButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     muteButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
@@ -164,13 +174,12 @@ void PlayerGUI::resized()
     stopButton.setBounds(x, y, buttonWidth, buttonHeight);
 
     // === 2. A-B Segment Looping Row ===
-    auto abRow = area.removeFromTop(35); // Reduced from 40
+    auto abRow = area.removeFromTop(35);
     abRow.reduce(margin, 0);
 
     int abButtonWidth = 65;
     int abButtonHeight = 28;
     int abSpacing = 10;
-
 
     int totalABWidth = (abButtonWidth + abSpacing) * 4 - abSpacing;
     int abStartX = (abRow.getWidth() - totalABWidth) / 2;
@@ -184,7 +193,7 @@ void PlayerGUI::resized()
     segmentLoopButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);
 
     // === 3. Slicing Row ===
-    auto sliceRow = area.removeFromTop(35); // Reduced from 40
+    auto sliceRow = area.removeFromTop(35);
     sliceRow.reduce(margin, 0);
 
     int sliceButtonWidth = 90;
@@ -202,11 +211,11 @@ void PlayerGUI::resized()
     saveSliceButton.setBounds(sliceX, sliceY, sliceButtonWidth, sliceButtonHeight);
 
     // === 4. Slice Info Label ===
-    auto infoRow = area.removeFromTop(22); // Reduced from 25
+    auto infoRow = area.removeFromTop(22);
     sliceInfoLabel.setBounds(infoRow.reduced(5, 2));
 
     // === 5. Track Markers Section ===
-    auto markersSection = area.removeFromTop(100); // Reduced from 120
+    auto markersSection = area.removeFromTop(100);
     markersSection.reduce(margin, 4);
 
     // Marker buttons row
@@ -219,7 +228,7 @@ void PlayerGUI::resized()
     markersList.setBounds(markersSection.reduced(2));
 
     // === 6. Position Slider & Time Labels ===
-    auto positionArea = area.removeFromTop(45); // Combined area for position
+    auto positionArea = area.removeFromTop(45);
     positionArea.reduce(margin, 0);
 
     // Time labels
@@ -236,18 +245,11 @@ void PlayerGUI::resized()
     volumeArea.reduce(margin, 0);
     volumeLabel.setBounds(volumeArea.removeFromLeft(70));
     volumeSlider.setBounds(volumeArea);
-
-    // DEBUG: Check if we have any space left (should be very little)
-    if (area.getHeight() > 10) {
-        DBG("Warning: " << area.getHeight() << " pixels unused in layout");
-    }
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
     if (!listener) return;
-
-
 
     if (button == &loadButton)     listener->loadButtonClicked();
     else if (button == &playButton)     listener->playButtonClicked();
@@ -332,7 +334,6 @@ void PlayerGUI::setLoopState(bool isLoopingNow)
     loopButton.setColour(juce::DrawableButton::backgroundOnColourId, isLooping ? activeColour : accentColour);
 }
 
-
 void PlayerGUI::setPlaybackState(bool playing)
 {
     isPlaying = playing;
@@ -397,6 +398,12 @@ void PlayerGUI::setSliceState(bool hasSlice)
     {
         sliceInfoLabel.setText("Set A-B markers and click Create Slice", juce::dontSendNotification);
     }
+}
+
+// New: Metadata display
+void PlayerGUI::setMetadataDisplay(const juce::String& metadataText)
+{
+    metadataLabel.setText(metadataText, juce::dontSendNotification);
 }
 
 // ListBoxModel implementation
