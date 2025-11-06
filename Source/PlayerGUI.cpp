@@ -56,7 +56,6 @@ PlayerGUI::PlayerGUI()
 
     sliceButton.setButtonText("Create Slice");
     saveSliceButton.setButtonText("Save Slice");
-
     saveSliceButton.setEnabled(false); // Initially disabled until slice is created
 
     // Slice info label
@@ -65,7 +64,7 @@ PlayerGUI::PlayerGUI()
     sliceInfoLabel.setColour(juce::Label::textColourId, textColour);
     addAndMakeVisible(sliceInfoLabel);
 
-    // Track Markers buttons - FIXED: Added missing addAndMakeVisible calls
+    // Track Markers buttons
     addAndMakeVisible(addMarkerButton);
     addMarkerButton.addListener(this);
     addMarkerButton.setColour(juce::TextButton::buttonColourId, accentColour);
@@ -172,6 +171,7 @@ void PlayerGUI::resized()
     int abButtonHeight = 28;
     int abSpacing = 10;
 
+
     int totalABWidth = (abButtonWidth + abSpacing) * 4 - abSpacing;
     int abStartX = (abRow.getWidth() - totalABWidth) / 2;
 
@@ -243,10 +243,11 @@ void PlayerGUI::resized()
     }
 }
 
-// ... REST OF YOUR METHODS REMAIN THE SAME ...
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
     if (!listener) return;
+
+
 
     if (button == &loadButton)     listener->loadButtonClicked();
     else if (button == &playButton)     listener->playButtonClicked();
@@ -295,7 +296,28 @@ void PlayerGUI::setListener(Listener* newListener)
 
 void PlayerGUI::loadButtonIcons()
 {
-    // Your existing icon loading code...
+    auto playImg = juce::Drawable::createFromImageData(BinaryData::play_jpg, BinaryData::play_jpgSize);
+    auto pauseImg = juce::Drawable::createFromImageData(BinaryData::pause_jpg, BinaryData::pause_jpgSize);
+    playButton.setImages(playImg.get(), nullptr, nullptr, nullptr, pauseImg.get());
+
+    auto muteImg = juce::Drawable::createFromImageData(BinaryData::mute_jpg, BinaryData::mute_jpgSize);
+    auto unmuteImg = juce::Drawable::createFromImageData(BinaryData::unmute_jpg, BinaryData::unmute_jpgSize);
+    muteButton.setImages(muteImg.get(), nullptr, nullptr, nullptr, unmuteImg.get());
+
+    auto loopImg = juce::Drawable::createFromImageData(BinaryData::loop_jpg, BinaryData::loop_jpgSize);
+    loopButton.setImages(loopImg.get());
+
+    auto restartImg = juce::Drawable::createFromImageData(BinaryData::restart_jpg, BinaryData::restart_jpgSize);
+    restartButton.setImages(restartImg.get());
+
+    auto back10Img = juce::Drawable::createFromImageData(BinaryData::back10_jpg, BinaryData::back10_jpgSize);
+    backwardButton.setImages(back10Img.get());
+
+    auto forward10Img = juce::Drawable::createFromImageData(BinaryData::forward10_jpg, BinaryData::forward10_jpgSize);
+    forwardButton.setImages(forward10Img.get());
+
+    auto endImg = juce::Drawable::createFromImageData(BinaryData::gotoend_jpg, BinaryData::gotoend_jpgSize);
+    goToEndButton.setImages(endImg.get());
 }
 
 void PlayerGUI::setLoopState(bool isLoopingNow)
@@ -309,6 +331,7 @@ void PlayerGUI::setLoopState(bool isLoopingNow)
     loopButton.setColour(juce::DrawableButton::backgroundColourId, isLooping ? activeColour : accentColour);
     loopButton.setColour(juce::DrawableButton::backgroundOnColourId, isLooping ? activeColour : accentColour);
 }
+
 
 void PlayerGUI::setPlaybackState(bool playing)
 {
