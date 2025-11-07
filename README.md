@@ -1,13 +1,13 @@
-# 🪐 JUCE Dual Audio Player with Mixer and Audio Slicer
+# 🎧 JUCE Dual Audio Player with Mixer and Audio Slicer
 
-## 🎧 Overview
+##  Overview
 
 A modern **dual audio player** built with the JUCE framework, featuring **two synchronized players**, a **real-time mixer**, and an **innovative audio slicer**.
 Designed for creative experimentation, music production, and DJ-style control, it delivers a clean interface and powerful playback tools.
 
 ---
 
-## 🚀 Features
+##  Features
 
 ### 🎵 1. Dual Audio Players
 
@@ -16,7 +16,7 @@ Designed for creative experimentation, music production, and DJ-style control, i
 * Displays **waveform previews** for both players.
 * Only one player outputs audio at a time for clarity (unless **mixing mode** is enabled).
 
-### 🎚️ 2. Mixer (New Feature)
+### 🎚️ 2. Mixer 
 
 * **Blend** two tracks by adjusting each player’s volume.
 * Seamlessly mix outputs in real time.
@@ -53,30 +53,30 @@ Designed for creative experimentation, music production, and DJ-style control, i
   * **Waveform preview**
   * **Volume and position sliders**
   * **A–B marker controls**
-* A **central mixer panel** (coming soon) for smooth crossfades between Player 1 and Player 2.
+  * A **central mixer panel** for smooth crossfades between Player 1 and Player 2.
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
-### 🎧 JUCE Audio Engine
+###  JUCE Audio Engine
 
 * Uses `AudioTransportSource` for each player.
 * Handles **real-time playback**, **looping**, and **position tracking**.
 
-### 🎚️ Mixing Logic
+###  Mixing Logic
 
 * Combines two `AudioSourceChannelInfo` streams in the mixer.
 * Each player’s **volume** determines its contribution to the final output buffer.
 
-### ✂️ Slicing System
+###  Slicing System
 
 * Users set **markers A and B** to define a loop segment.
 * The segment can be **looped**, **previewed**, or (in future versions) **exported**.
 
 ---
 
-## 🛠️ Build Instructions
+##  Build Instructions
 
 ### Prerequisites
 
@@ -102,15 +102,15 @@ cmake --build build
 
 ## 🔮 Future Improvements
 
-* 🎚️ Dedicated mixer panel with smooth crossfades
-* 🎛️ Per-player EQ and filter controls
-* 💾 Export sliced clips as new audio files
-* 🌈 Dynamic visualizer synchronized with playback
-* 🎹 MIDI controller support for live performance
+*  Dedicated mixer panel with smooth crossfades
+*  Per-player EQ and filter controls
+*  Export sliced clips as new audio files
+*  Dynamic visualizer synchronized with playback
+*  MIDI controller support for live performance
 
 ---
 
-## 👩‍💻Team
+## Team👩‍💻
 
 **Asmaa Faroug**
 
