@@ -109,60 +109,59 @@ cmake --build build
 *  MIDI controller support for live performance
 
 ---
-+---------------------------------------------------+
-|                   MainComponent                   |
-+---------------------------------------------------+
-| - player1: PlayerAudio                            |
-| - player2: PlayerAudio                            |
-| - player1GUI: PlayerGUI                           |
-| - player2GUI: PlayerGUI                           |
-| - mixer: Mixer                                    |
-+---------------------------------------------------+
-| + prepareToPlay(samplesPerBlock, sampleRate)      |
-| + getNextAudioBlock(bufferToFill)                 |
-| + releaseResources()                              |
-| + paint(g)                                        |
-| + resized()                                       |
-+---------------------------------------------------+
-             |                         |
-             |                         |
-   controls  |                         |  controls
-             v                         v
-+---------------------------+   +---------------------------+
-|         PlayerGUI         |   |        PlayerAudio        |
-+---------------------------+   +---------------------------+
-| - transport: PlayerAudio*  |  | - audioFormatReaderSource: AudioFormatReaderSource |
-| - playButton               |  | - transportSource: AudioTransportSource            |
-| - stopButton               |  | - volume: float                                   |
-| - loopButton               |  | - isMuted: bool                                   |
-| - muteButton               |  | - loopEnabled: bool                               |
-| - loadButton               |  | - markerA: double                                 |
-| - volumeSlider             |  | - markerB: double                                 |
-| - positionSlider           |  |---------------------------------------------------|
-| - waveformDisplay          |  | + loadURL(audioURL)                              |
-| - markerA, markerB         |  | + start()                                        |
-+---------------------------+  | + stop()                                         |
-| + setTransportSource(audio: PlayerAudio)         | + setLooping(loop: bool)     |
-| + buttonClicked(button)                          | + setVolume(vol: float)      |
-| + sliderValueChanged(slider)                     | + setMarkers(a, b)           |
-| + paint(g)                                       | + getNextAudioBlock(buffer)  |
-| + resized()                                      | + getCurrentPosition()       |
-+---------------------------+  | + prepareToPlay() / releaseResources()             |
-                               +---------------------------------------------------+
-                                            ^
-                                            |
-                                            | uses
-                                            |
-                                +------------------------+
-                                |         Mixer          |
-                                +------------------------+
-                                | - player1: PlayerAudio*|
-                                | - player2: PlayerAudio*|
-                                | - crossfade: float     |
-                                +------------------------+
-                                | + setCrossfade(float)  |
-                                | + getNextAudioBlock()  |
-                                +------------------------+
++-----------------------------------------------------------+
+|                      MainComponent                        |
++-----------------------------------------------------------+
+| - player1: PlayerAudio                                    |
+| - player2: PlayerAudio                                    |
+| - player1GUI: PlayerGUI                                   |
+| - player2GUI: PlayerGUI                                   |
+| - mixer: Mixer                                            |
++-----------------------------------------------------------+
+| + prepareToPlay(samplesPerBlock, sampleRate)              |
+| + getNextAudioBlock(bufferToFill)                         |
+| + releaseResources()                                      |
+| + paint(g)                                                |
+| + resized()                                               |
++-----------------------------------------------------------+
+             |                                |
+             | controls                       | controls
+             v                                v
++---------------------------+     +---------------------------+
+|         PlayerGUI         |     |        PlayerAudio        |
++---------------------------+     +---------------------------+
+| - transport: PlayerAudio*  |    | - audioFormatReaderSource: AudioFormatReaderSource |
+| - playButton               |    | - transportSource: AudioTransportSource            |
+| - stopButton               |    | - volume: float                                   |
+| - loopButton               |    | - isMuted: bool                                   |
+| - muteButton               |    | - loopEnabled: bool                               |
+| - loadButton               |    | - markerA: double                                 |
+| - volumeSlider             |    | - markerB: double                                 |
+| - positionSlider           |    +---------------------------------------------------+
+| - waveformDisplay          |    | + loadURL(audioURL)                              |
+| - markerA, markerB         |    | + start()                                        |
++---------------------------+    | + stop()                                         |
+| + setTransportSource(audio: PlayerAudio)         | + setLooping(loop: bool)       |
+| + buttonClicked(button)                          | + setVolume(vol: float)        |
+| + sliderValueChanged(slider)                     | + setMarkers(a, b)             |
+| + paint(g)                                       | + getNextAudioBlock(buffer)    |
+| + resized()                                      | + getCurrentPosition()         |
++---------------------------+    | + prepareToPlay() / releaseResources()             |
+                                 +---------------------------------------------------+
+                                             ^
+                                             |
+                                             | uses
+                                             |
+                                 +---------------------------+
+                                 |           Mixer            |
+                                 +---------------------------+
+                                 | - player1: PlayerAudio*   |
+                                 | - player2: PlayerAudio*   |
+                                 | - crossfade: float        |
+                                 +---------------------------+
+                                 | + setCrossfade(float)     |
+                                 | + getNextAudioBlock()     |
+                                 +---------------------------+
 
 
 
