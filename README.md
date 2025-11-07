@@ -100,7 +100,7 @@ cmake --build build
 
 ---
 
-## 🔮 Future Improvements
+##  Future Improvements
 
 *  Dedicated mixer panel with smooth crossfades
 *  Per-player EQ and filter controls
@@ -112,7 +112,7 @@ cmake --build build
 
 ## Team👩‍💻
 
-**Asmaa Faroug**
+**Asmaa Farouq**
 
 **Arwa Bashier**
 
