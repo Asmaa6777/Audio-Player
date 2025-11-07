@@ -133,21 +133,21 @@ cmake --build build
 +---------------------------+   +---------------------------+
 | - transport: PlayerAudio*  |  | - audioFormatReaderSource: AudioFormatReaderSource |
 | - playButton               |  | - transportSource: AudioTransportSource            |
-| - stopButton               |  | - volume: float                                    |
-| - loopButton               |  | - isMuted: bool                                    |
-| - muteButton               |  | - loopEnabled: bool                                |
-| - loadButton               |  | - markerA: double                                  |
-| - volumeSlider             |  | - markerB: double                                  |
-| - positionSlider           |  |--------------------------------------------------- |
-| - waveformDisplay          |  | + loadURL(audioURL)                             |
-| - markerA, markerB         |  | + start()                                       |
+| - stopButton               |  | - volume: float                                   |
+| - loopButton               |  | - isMuted: bool                                   |
+| - muteButton               |  | - loopEnabled: bool                               |
+| - loadButton               |  | - markerA: double                                 |
+| - volumeSlider             |  | - markerB: double                                 |
+| - positionSlider           |  |---------------------------------------------------|
+| - waveformDisplay          |  | + loadURL(audioURL)                              |
+| - markerA, markerB         |  | + start()                                        |
 +---------------------------+  | + stop()                                         |
 | + setTransportSource(audio: PlayerAudio)         | + setLooping(loop: bool)     |
 | + buttonClicked(button)                          | + setVolume(vol: float)      |
 | + sliderValueChanged(slider)                     | + setMarkers(a, b)           |
 | + paint(g)                                       | + getNextAudioBlock(buffer)  |
 | + resized()                                      | + getCurrentPosition()       |
-+---------------------------+  | + prepareToPlay() / releaseResources()           |
++---------------------------+  | + prepareToPlay() / releaseResources()             |
                                +---------------------------------------------------+
                                             ^
                                             |
