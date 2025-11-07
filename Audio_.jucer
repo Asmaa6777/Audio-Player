@@ -18,8 +18,6 @@
       </GROUP>
     </GROUP>
     <GROUP id="{0C7C3CB4-A759-D6A5-D57D-DB20FAFEAAE7}" name="Source">
-      <FILE id="bmPlP3" name="AudioGUI.cpp" compile="1" resource="1" file="Source/AudioGUI.cpp"/>
-      <FILE id="qvEeDk" name="AudioGUI.h" compile="0" resource="1" file="Source/AudioGUI.h"/>
       <FILE id="hDKCa2" name="Main.cpp" compile="1" resource="1" file="Source/Main.cpp"/>
       <FILE id="EIsQv9" name="MainComponent.cpp" compile="1" resource="1"
             file="Source/MainComponent.cpp"/>
@@ -52,18 +50,18 @@
         <CONFIGURATION isDebug="0" name="Release" targetName="Audio_"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_analytics" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../juce-8.0.10-windows/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../juce-8.0.10-windows/JUCE/modules"/>
+        <MODULEPATH id="juce_analytics" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\JUCE\modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>

@@ -13,13 +13,14 @@ public:
     public:
         virtual ~Listener() = default;
         virtual void loadButtonClicked() = 0;
-        virtual void loadSecondTrackButtonClicked() = 0;  // Added this
+        virtual void loadSecondTrackButtonClicked() = 0;
         virtual void playButtonClicked() = 0;
         virtual void stopButtonClicked() = 0;
         virtual void restartButtonClicked() = 0;
         virtual void loopButtonClicked() = 0;
         virtual void muteButtonClicked() = 0;
         virtual void volumeChanged(float newVolume) = 0;
+        virtual void speedChanged(float newSpeed) = 0;
         virtual void forwardButtonClicked() = 0;
         virtual void backwardButtonClicked() = 0;
         virtual void goToEndButtonClicked() = 0;
@@ -34,7 +35,6 @@ public:
         virtual void deleteMarkerButtonClicked() = 0;
         virtual void jumpToMarker(int index) = 0;
 
-        // Playlist functions
         virtual void loadPlaylistButtonClicked() = 0;
         virtual void prevTrackButtonClicked() = 0;
         virtual void nextTrackButtonClicked() = 0;
@@ -64,10 +64,8 @@ public:
     void setMarkerBState(bool isSet);
     void setSegmentLoopState(bool isActive);
 
-    // Public access to markers list for MainComponent
     juce::ListBox& getMarkersList() { return markersList; }
 
-    // New: Metadata display
     void setMetadataDisplay(const juce::String& metadataText);
 
     void loadButtonIcons();
@@ -82,12 +80,14 @@ private:
     juce::DrawableButton goToEndButton{ "GoToEnd",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton loopButton{ "Loop",     juce::DrawableButton::ImageFitted };
 
-    juce::TextButton loadButton{ "Load Track 1" };  // Updated text
-    juce::TextButton loadSecondTrackButton{ "Load Track 2" };  // ADDED THIS
+    juce::TextButton loadButton{ "Load Track 1" };
+    juce::TextButton loadSecondTrackButton{ "Load Track 2" };
     juce::TextButton stopButton{ "Stop" };
 
     juce::Slider volumeSlider;
     juce::Label  volumeLabel{ "Volume" };
+    juce::Slider speedSlider;
+    juce::Label  speedLabel{ "Speed" };
 
     juce::Slider positionSlider;
     juce::Label currentTimeLabel;
@@ -109,18 +109,16 @@ private:
     juce::TextButton saveSliceButton{ "Save Slice" };
     juce::Label sliceInfoLabel;
 
-    // Track Markers controls
     juce::TextButton addMarkerButton{ "Add Marker" };
     juce::TextButton deleteMarkerButton{ "Delete Marker" };
     juce::ListBox markersList;
 
-    // New: Metadata display
     juce::Label metadataLabel;
 
     juce::TextButton loadPlaylistButton{ "Load Playlist" };
     juce::TextButton prevTrackButton{ "Prev Track" };
     juce::TextButton nextTrackButton{ "Next Track" };
-    juce::ComboBox playlistBox; // Dropdown to select tracks
+    juce::ComboBox playlistBox;
     juce::Label playlistLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)

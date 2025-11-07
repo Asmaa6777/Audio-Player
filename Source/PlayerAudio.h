@@ -9,13 +9,11 @@ public:
     PlayerAudio();
     ~PlayerAudio();
 
-    // Basic audio functionality
     void loadFile(const juce::File& audioFile);
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
-    // Playback control
     void play();
     void stop();
     void restart();
@@ -23,21 +21,20 @@ public:
     bool isPlaying() const;
     bool isLoopingEnabled() const { return isLooping; }
 
-    // Transport control
     void backward(double seconds);
     void forward(double seconds);
     void setVolume(float newVolume);
     float getVolume() const;
+    void setSpeed(float newSpeed);
+    float getSpeed() const { return currentSpeed; }
     void goToEnd();
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
 
-    // State persistence
     void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
     void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 
-    // A-B Segment Looping
     void setMarkerA();
     void setMarkerB();
     void clearMarkers();
@@ -48,13 +45,11 @@ public:
     bool hasMarkers() const { return markerA >= 0 && markerB > markerA; }
     void checkSegmentLooping();
 
-    // Audio Slicing methods
     bool createSliceFromMarkers();
     bool saveSliceToFile(const juce::File& outputFile);
     bool hasValidSlice() const;
     juce::String getSliceInfo() const;
 
-    // Track Markers functionality
     struct Marker {
         double time;
         juce::String name;
@@ -70,7 +65,6 @@ public:
     const juce::Array<Marker>& getMarkers() const { return markers; }
     juce::String getMarkerInfo(int index) const;
 
-    // Metadata support
     struct Metadata {
         juce::String title;
         juce::String artist;
@@ -79,7 +73,6 @@ public:
         juce::String filename;
         double duration;
 
-        // Constructor to initialize values
         Metadata() : title(""), artist(""), album(""), year(""), filename(""), duration(0.0) {}
     };
 
@@ -88,31 +81,28 @@ public:
 private:
     juce::AudioFormatManager formatManager;
     juce::AudioTransportSource transportSource;
+    juce::ResamplingAudioSource resampleSource{ &transportSource, false, 2 };
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
 
     bool isLooping = false;
     float currentVolume = 1.0f;
+    float currentSpeed = 1.0f;
 
-    // A-B markers for segment looping
     double markerA = -1.0;
     double markerB = -1.0;
     bool segmentLooping = false;
 
     juce::File currentFile;
 
-    // Slicing system
     juce::AudioBuffer<float> audioSlice;
     bool sliceReady = false;
     double sliceStart = 0.0;
     double sliceEnd = 0.0;
 
-    // Track markers
     juce::Array<Marker> markers;
 
-    // Metadata
     Metadata metadata;
 
-    // Helper methods
     void extractMetadata(juce::AudioFormatReader* reader, const juce::File& audioFile);
     bool isValidAudioFile(const juce::File& file) const;
 };

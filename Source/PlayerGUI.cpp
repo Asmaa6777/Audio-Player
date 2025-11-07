@@ -3,21 +3,19 @@
 PlayerGUI::PlayerGUI()
 {
     loadButtonIcons();
-    auto baseColour = juce::Colour(0xFF2B2B5E);     // deep space blue
-    auto accentColour = juce::Colour(0xFF6A5ACD);   // violet
-    auto activeColour = juce::Colour(0xFF9370DB);   // brighter purple
-    auto borderColour = juce::Colour(0xFF483D8B);   // slate
-    auto textColour = juce::Colour(0xFFB0AFFF);     // soft white-blue
-    auto sliderThumb = juce::Colour(0xFFAD8CFF);    // glowing lavender
+    auto baseColour = juce::Colour(0xFF2B2B5E);
+    auto accentColour = juce::Colour(0xFF6A5ACD);
+    auto activeColour = juce::Colour(0xFF9370DB);
+    auto borderColour = juce::Colour(0xFF483D8B);
+    auto textColour = juce::Colour(0xFFB0AFFF);
+    auto sliderThumb = juce::Colour(0xFFAD8CFF);
 
-    // New: Metadata label
     metadataLabel.setJustificationType(juce::Justification::centred);
     metadataLabel.setColour(juce::Label::textColourId, textColour);
     metadataLabel.setText("No file loaded", juce::dontSendNotification);
     addAndMakeVisible(metadataLabel);
 
-    // Load and Stop buttons (text buttons) - ADD loadSecondTrackButton HERE
-    for (auto* button : { &loadButton, &loadSecondTrackButton, &stopButton })  // UPDATED THIS LINE
+    for (auto* button : { &loadButton, &loadSecondTrackButton, &stopButton })
     {
         addAndMakeVisible(button);
         button->addListener(this);
@@ -27,7 +25,6 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
 
-    // Icon buttons
     for (auto* button : { &muteButton, &restartButton, &backwardButton, &playButton,
                          &forwardButton, &goToEndButton, &loopButton })
     {
@@ -38,7 +35,6 @@ PlayerGUI::PlayerGUI()
         button->setAlpha(0.95f);
     }
 
-    // A-B Segment Looping buttons - consistent purple styling
     for (auto* button : { &markerAButton, &markerBButton, &clearMarkersButton, &segmentLoopButton })
     {
         addAndMakeVisible(button);
@@ -49,7 +45,6 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
 
-    // Slicing buttons - same styling as A-B buttons
     for (auto* button : { &sliceButton, &saveSliceButton })
     {
         addAndMakeVisible(button);
@@ -62,15 +57,13 @@ PlayerGUI::PlayerGUI()
 
     sliceButton.setButtonText("Create Slice");
     saveSliceButton.setButtonText("Save Slice");
-    saveSliceButton.setEnabled(false); // Initially disabled until slice is created
+    saveSliceButton.setEnabled(false);
 
-    // Slice info label
     sliceInfoLabel.setJustificationType(juce::Justification::centred);
     sliceInfoLabel.setText("Set A-B markers and click Create Slice", juce::dontSendNotification);
     sliceInfoLabel.setColour(juce::Label::textColourId, textColour);
     addAndMakeVisible(sliceInfoLabel);
 
-    // Track Markers buttons
     addAndMakeVisible(addMarkerButton);
     addMarkerButton.addListener(this);
     addMarkerButton.setColour(juce::TextButton::buttonColourId, accentColour);
@@ -87,13 +80,11 @@ PlayerGUI::PlayerGUI()
     deleteMarkerButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     deleteMarkerButton.setButtonText("Delete Marker");
 
-    // Markers list
     addAndMakeVisible(markersList);
     markersList.setRowHeight(25);
     markersList.setColour(juce::ListBox::backgroundColourId, baseColour.withAlpha(0.7f));
     markersList.setColour(juce::ListBox::outlineColourId, borderColour);
 
-    // Volume slider
     volumeSlider.setRange(0.0, 1.0, 0.01);
     volumeSlider.setValue(0.5);
     volumeSlider.addListener(this);
@@ -111,7 +102,23 @@ PlayerGUI::PlayerGUI()
     volumeLabel.setColour(juce::Label::textColourId, textColour);
     addAndMakeVisible(volumeLabel);
 
-    // Position slider
+    speedSlider.setRange(0.5, 2.0, 0.01);
+    speedSlider.setValue(1.0);
+    speedSlider.addListener(this);
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 60, 20);
+    speedSlider.setColour(juce::Slider::thumbColourId, sliderThumb);
+    speedSlider.setColour(juce::Slider::trackColourId, accentColour);
+    speedSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF));
+    speedSlider.setColour(juce::Slider::textBoxTextColourId, textColour);
+    speedSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xFFF8F6FF));
+    speedSlider.setColour(juce::Slider::textBoxOutlineColourId, juce::Colour(0xFFD8BFD8));
+    addAndMakeVisible(speedSlider);
+
+    speedLabel.setJustificationType(juce::Justification::centredLeft);
+    speedLabel.setText("Speed", juce::dontSendNotification);
+    speedLabel.setColour(juce::Label::textColourId, textColour);
+    addAndMakeVisible(speedLabel);
+
     positionSlider.setRange(0.0, 1.0, 0.0001);
     positionSlider.setSliderStyle(juce::Slider::LinearHorizontal);
     positionSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -121,7 +128,6 @@ PlayerGUI::PlayerGUI()
     positionSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xFFF0E6FF));
     addAndMakeVisible(positionSlider);
 
-    // Time labels
     currentTimeLabel.setText("0:00", juce::dontSendNotification);
     totalTimeLabel.setText("0:00", juce::dontSendNotification);
     currentTimeLabel.setJustificationType(juce::Justification::centred);
@@ -135,7 +141,6 @@ PlayerGUI::PlayerGUI()
     setPlaybackState(false);
     setMuteState(false);
 
-    // Playlist controls
     addAndMakeVisible(loadPlaylistButton);
     loadPlaylistButton.addListener(this);
     loadPlaylistButton.setColour(juce::TextButton::buttonColourId, accentColour);
@@ -172,11 +177,9 @@ void PlayerGUI::resized()
     auto area = getLocalBounds();
     int margin = 8;
 
-    // === 0. Metadata Display ===
     auto metadataRow = area.removeFromTop(25);
     metadataLabel.setBounds(metadataRow.reduced(5, 2));
 
-    // === 0.5. Playlist Controls ===
     auto playlistRow = area.removeFromTop(30);
     playlistRow.reduce(margin, 0);
 
@@ -190,14 +193,12 @@ void PlayerGUI::resized()
     playlistLabel.setBounds(playlistRow.removeFromLeft(60).reduced(2));
     playlistBox.setBounds(playlistRow.reduced(2));
 
-    // === 1. Main Transport Buttons ===
     auto topRow = area.removeFromTop(70);
 
     int buttonWidth = 65;
     int buttonHeight = 65;
     int spacing = 8;
 
-    // Calculate centered positions
     int totalButtonWidth = (buttonWidth + spacing) * 9 - spacing;
     int startX = (topRow.getWidth() - totalButtonWidth) / 2;
 
@@ -215,7 +216,6 @@ void PlayerGUI::resized()
     loopButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     stopButton.setBounds(x, y, buttonWidth, buttonHeight);
 
-    // === 2. A-B Segment Looping Row ===
     auto abRow = area.removeFromTop(35);
     abRow.reduce(margin, 0);
 
@@ -234,7 +234,6 @@ void PlayerGUI::resized()
     clearMarkersButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);   abX += abButtonWidth + abSpacing;
     segmentLoopButton.setBounds(abX, abY, abButtonWidth, abButtonHeight);
 
-    // === 3. Slicing Row ===
     auto sliceRow = area.removeFromTop(35);
     sliceRow.reduce(margin, 0);
 
@@ -252,41 +251,38 @@ void PlayerGUI::resized()
     sliceX += sliceButtonWidth + sliceSpacing;
     saveSliceButton.setBounds(sliceX, sliceY, sliceButtonWidth, sliceButtonHeight);
 
-    // === 4. Slice Info Label ===
     auto infoRow = area.removeFromTop(22);
     sliceInfoLabel.setBounds(infoRow.reduced(5, 2));
 
-    // === 5. Track Markers Section ===
     auto markersSection = area.removeFromTop(100);
     markersSection.reduce(margin, 4);
 
-    // Marker buttons row
     auto markerButtonsRow = markersSection.removeFromTop(28);
     int markerButtonWidth = 100;
     addMarkerButton.setBounds(markerButtonsRow.removeFromLeft(markerButtonWidth).reduced(2));
     deleteMarkerButton.setBounds(markerButtonsRow.removeFromLeft(markerButtonWidth).reduced(2));
 
-    // Markers list - takes remaining space in markers section
     markersList.setBounds(markersSection.reduced(2));
 
-    // === 6. Position Slider & Time Labels ===
     auto positionArea = area.removeFromTop(45);
     positionArea.reduce(margin, 0);
 
-    // Time labels
     int timeLabelWidth = 70;
     auto timeLabelArea = positionArea.removeFromTop(20);
     currentTimeLabel.setBounds(timeLabelArea.removeFromLeft(timeLabelWidth));
     totalTimeLabel.setBounds(timeLabelArea.removeFromRight(timeLabelWidth));
 
-    // Position slider
     positionSlider.setBounds(positionArea.reduced(0, 2));
 
-    // === 7. Volume Controls ===
     auto volumeArea = area.removeFromTop(35);
     volumeArea.reduce(margin, 0);
     volumeLabel.setBounds(volumeArea.removeFromLeft(70));
     volumeSlider.setBounds(volumeArea);
+
+    auto speedArea = area.removeFromTop(35);
+    speedArea.reduce(margin, 0);
+    speedLabel.setBounds(speedArea.removeFromLeft(70));
+    speedSlider.setBounds(speedArea);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -294,7 +290,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     if (!listener) return;
 
     if (button == &loadButton)     listener->loadButtonClicked();
-    else if (button == &loadSecondTrackButton) listener->loadSecondTrackButtonClicked();  // ADDED THIS
+    else if (button == &loadSecondTrackButton) listener->loadSecondTrackButtonClicked();
     else if (button == &playButton)     listener->playButtonClicked();
     else if (button == &stopButton)     listener->stopButtonClicked();
     else if (button == &restartButton)  listener->restartButtonClicked();
@@ -320,6 +316,8 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider && listener)
         listener->volumeChanged((float)slider->getValue());
+    else if (slider == &speedSlider && listener)
+        listener->speedChanged((float)slider->getValue());
     else if (slider == &positionSlider && listener)
     {
         double cur = positionSlider.getValue() * lastTotalSeconds;
@@ -332,7 +330,6 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 
 void PlayerGUI::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
-    // Update the markers list when markers change
     markersList.updateContent();
     markersList.repaint();
 }
@@ -446,7 +443,6 @@ void PlayerGUI::setSliceState(bool hasSlice)
     }
 }
 
-// New: Metadata display
 void PlayerGUI::setMetadataDisplay(const juce::String& metadataText)
 {
     metadataLabel.setText(metadataText, juce::dontSendNotification);

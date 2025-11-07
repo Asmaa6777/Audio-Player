@@ -3,6 +3,7 @@
 PlayerAudio::PlayerAudio()
 {
     formatManager.registerBasicFormats();
+    resampleSource.prepareToPlay(512, 44100.0);
 }
 
 PlayerAudio::~PlayerAudio()
@@ -25,34 +26,35 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
         currentFile = audioFile;
 
-        // Reset slice state when new file is loaded
         sliceReady = false;
         audioSlice.setSize(0, 0);
 
-        // Clear markers when new file is loaded
         clearAllMarkers();
 
-        // Extract metadata
+        setSpeed(1.0f);
+
         extractMetadata(reader, audioFile);
 
-        sendChangeMessage(); // Notify that metadata is updated
+        sendChangeMessage();
     }
 }
 
 void PlayerAudio::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
+    resampleSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
 
 void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    transportSource.getNextAudioBlock(bufferToFill);
+    resampleSource.getNextAudioBlock(bufferToFill);
     checkSegmentLooping();
 }
 
 void PlayerAudio::releaseResources()
 {
     transportSource.releaseResources();
+    resampleSource.releaseResources();
 }
 
 void PlayerAudio::play()
@@ -97,6 +99,12 @@ float PlayerAudio::getVolume() const
     return currentVolume;
 }
 
+void PlayerAudio::setSpeed(float newSpeed)
+{
+    currentSpeed = juce::jlimit(0.5f, 2.0f, newSpeed);
+    resampleSource.setResamplingRatio(currentSpeed);
+}
+
 void PlayerAudio::backward(double seconds)
 {
     auto newPosition = juce::jmax(0.0, transportSource.getCurrentPosition() - seconds);
@@ -126,6 +134,7 @@ void PlayerAudio::SaveState(juce::PropertiesFile& props, const juce::String& key
 {
     props.setValue(keyPrefix + "_lastFile", currentFile.getFullPathName());
     props.setValue(keyPrefix + "_lastPosition", transportSource.getCurrentPosition());
+    props.setValue(keyPrefix + "_lastSpeed", currentSpeed);
     props.saveIfNeeded();
 }
 
@@ -139,12 +148,13 @@ void PlayerAudio::RestoreState(juce::PropertiesFile& props, const juce::String& 
         {
             loadFile(fileToLoad);
             double lastPosition = props.getDoubleValue(keyPrefix + "_lastPosition", 0.0);
+            float lastSpeed = props.getDoubleValue(keyPrefix + "_lastSpeed", 1.0f);
             transportSource.setPosition(lastPosition);
+            setSpeed(lastSpeed);
         }
     }
 }
 
-// A-B Segment Looping
 void PlayerAudio::setMarkerA()
 {
     markerA = transportSource.getCurrentPosition();
@@ -187,7 +197,6 @@ void PlayerAudio::checkSegmentLooping()
     }
 }
 
-// Audio Slicing Implementation
 bool PlayerAudio::createSliceFromMarkers()
 {
     if (!hasMarkers() || readerSource == nullptr)
@@ -200,7 +209,6 @@ bool PlayerAudio::createSliceFromMarkers()
     if (reader == nullptr)
         return false;
 
-    // Calculate slice parameters
     int sampleRate = reader->sampleRate;
     int startSample = (int)(sliceStart * sampleRate);
     int numSamples = (int)((sliceEnd - sliceStart) * sampleRate);
@@ -208,10 +216,8 @@ bool PlayerAudio::createSliceFromMarkers()
     if (numSamples <= 0)
         return false;
 
-    // Create audio buffer for the slice
     audioSlice.setSize(reader->numChannels, numSamples);
 
-    // Read the audio data into the buffer
     if (!reader->read(&audioSlice, 0, numSamples, startSample, true, true))
         return false;
 
@@ -224,7 +230,6 @@ bool PlayerAudio::saveSliceToFile(const juce::File& outputFile)
     if (!sliceReady || audioSlice.getNumSamples() == 0)
         return false;
 
-    // Create WAV writer
     juce::WavAudioFormat wavFormat;
     std::unique_ptr<juce::AudioFormatWriter> writer;
 
@@ -267,7 +272,6 @@ juce::String PlayerAudio::getSliceInfo() const
         sliceStart, sliceEnd, duration);
 }
 
-// Track Markers Implementation
 void PlayerAudio::addMarker(double time, const juce::String& name) {
     Marker newMarker;
     newMarker.time = time;
@@ -281,13 +285,13 @@ void PlayerAudio::addMarker(double time, const juce::String& name) {
 
     markers.add(newMarker);
     std::sort(markers.begin(), markers.end());
-    sendChangeMessage(); // Notify GUI to update
+    sendChangeMessage();
 }
 
 void PlayerAudio::removeMarker(int index) {
     if (index >= 0 && index < markers.size()) {
         markers.remove(index);
-        sendChangeMessage(); // Notify GUI to update
+        sendChangeMessage();
     }
 }
 
@@ -299,7 +303,7 @@ void PlayerAudio::jumpToMarker(int index) {
 
 void PlayerAudio::clearAllMarkers() {
     markers.clear();
-    sendChangeMessage(); // Notify GUI to update
+    sendChangeMessage();
 }
 
 juce::String PlayerAudio::getMarkerInfo(int index) const {
@@ -312,21 +316,18 @@ juce::String PlayerAudio::getMarkerInfo(int index) const {
     return "";
 }
 
-// Private Helper Methods
 void PlayerAudio::extractMetadata(juce::AudioFormatReader* reader, const juce::File& audioFile)
 {
     metadata = Metadata();
     metadata.filename = audioFile.getFileName();
     metadata.duration = reader->lengthInSamples / reader->sampleRate;
 
-    // Try to extract metadata from tags
     auto& metadataValues = reader->metadataValues;
     metadata.title = metadataValues.getValue("Title", "");
     metadata.artist = metadataValues.getValue("Artist", "");
     metadata.album = metadataValues.getValue("Album", "");
     metadata.year = metadataValues.getValue("Year", "");
 
-    // If no title metadata, use filename without extension
     if (metadata.title.isEmpty())
         metadata.title = audioFile.getFileNameWithoutExtension();
 }

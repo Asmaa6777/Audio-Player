@@ -19,16 +19,13 @@ MainComponent::MainComponent()
 
     startTimerHz(30);
 
-    // Set up single player GUI
     addAndMakeVisible(playerGUI);
     playerGUI.setListener(this);
     playerGUI.getMarkersList().setModel(this);
 
-    // Listen for marker changes from both players
     player1.addChangeListener(this);
     player2.addChangeListener(this);
 
-    // Set up audio mixing for both players
     mixerAudioSource.addInputSource(&player1, false);
     mixerAudioSource.addInputSource(&player2, false);
 
@@ -63,7 +60,6 @@ void MainComponent::releaseResources()
 
 void MainComponent::paint(juce::Graphics& g)
 {
-    // === Galaxy Background ===
     juce::ColourGradient bgGradient(
         juce::Colour::fromRGB(5, 5, 15), 0, 0,
         juce::Colour::fromRGB(20, 10, 35), 0, (float)getHeight(),
@@ -71,7 +67,6 @@ void MainComponent::paint(juce::Graphics& g)
     g.setGradientFill(bgGradient);
     g.fillAll();
 
-    // === Hundreds of Small Stars ===
     g.setColour(juce::Colours::white);
     for (int i = 0; i < 300; ++i)
     {
@@ -85,23 +80,19 @@ void MainComponent::paint(juce::Graphics& g)
         g.fillEllipse(x, y, size, size);
     }
 
-    // === Add Galactic Nebula Effects ===
     g.setColour(juce::Colour::fromRGBA(80, 60, 150, 30));
     g.fillEllipse(getWidth() * 0.3f, getHeight() * 0.2f, 250, 150);
 
     g.setColour(juce::Colour::fromRGBA(120, 80, 180, 25));
     g.fillEllipse(getWidth() * 0.6f, getHeight() * 0.6f, 300, 200);
 
-    // === Title Bar ===
     auto titleArea = getLocalBounds().removeFromTop(40).reduced(20, 5);
     g.setColour(juce::Colours::white.withAlpha(0.9f));
     g.setFont(20.0f);
     g.drawText("Dual Track Mixer - Two Waveforms, One Player", titleArea, juce::Justification::centred);
 
-    // === Status Bar with Playlist Info ===
     auto statusArea = getLocalBounds().removeFromTop(25).reduced(20, 0);
 
-    // Show playlist info if loaded
     if (playlistLoaded)
     {
         g.setColour(juce::Colours::limegreen.withAlpha(0.8f));
@@ -111,7 +102,6 @@ void MainComponent::paint(juce::Graphics& g)
         g.drawText(playlistInfo, statusArea.removeFromRight(100), juce::Justification::centredRight);
     }
 
-    // Track status
     g.setColour(juce::Colours::white.withAlpha(0.6f));
     g.setFont(12.0f);
     juce::String statusText = "Track 1: ";
@@ -128,27 +118,21 @@ void MainComponent::paint(juce::Graphics& g)
 
     g.drawText(statusText, statusArea, juce::Justification::centredLeft);
 
-    // === Dual Waveform Display ===
     auto waveformArea = getLocalBounds().removeFromTop(240).reduced(20, 10);
 
-    // Draw background for waveform area
     g.setColour(juce::Colours::black.withAlpha(0.3f));
     g.fillRoundedRectangle(waveformArea.toFloat(), 8.0f);
     g.setColour(juce::Colours::white.withAlpha(0.2f));
     g.drawRoundedRectangle(waveformArea.toFloat(), 8.0f, 1.0f);
 
-    // Split into two waveform areas
     auto waveform1Area = waveformArea.removeFromTop(waveformArea.getHeight() / 2).reduced(5, 5);
     auto waveform2Area = waveformArea.reduced(5, 5);
 
-    // Draw Track 1 Waveform
     if (showWaveform1 && thumbnail1.getTotalLength() > 0.0)
     {
-        // Background for track 1 waveform
         g.setColour(juce::Colours::black.withAlpha(0.5f));
         g.fillRoundedRectangle(waveform1Area.toFloat(), 4.0f);
 
-        // Waveform gradient for track 1
         juce::ColourGradient waveform1Gradient(
             juce::Colours::cyan.withAlpha(0.8f), (float)waveform1Area.getX(), (float)waveform1Area.getCentreY(),
             juce::Colours::blue.withAlpha(0.8f), (float)waveform1Area.getRight(), (float)waveform1Area.getCentreY(),
@@ -156,7 +140,6 @@ void MainComponent::paint(juce::Graphics& g)
         g.setGradientFill(waveform1Gradient);
         thumbnail1.drawChannel(g, waveform1Area, 0.0, thumbnail1.getTotalLength(), 0, 0.85f);
 
-        // Draw markers for track 1
         auto& markers1 = player1.getMarkers();
         double totalLength1 = player1.getLengthInSeconds();
         for (const auto& marker : markers1)
@@ -169,7 +152,6 @@ void MainComponent::paint(juce::Graphics& g)
             g.fillEllipse(xPos - 3, waveform1Area.getBottom() - 8, 6, 6);
         }
 
-        // Draw current playback cursor for track 1
         if (player1.isPlaying())
         {
             double position = player1.getCurrentPosition();
@@ -179,7 +161,6 @@ void MainComponent::paint(juce::Graphics& g)
             g.drawLine(x, (float)waveform1Area.getY(), x, (float)waveform1Area.getBottom(), 2.0f);
         }
 
-        // Track 1 label
         g.setColour(juce::Colours::white.withAlpha(0.8f));
         g.setFont(12.0f);
         g.drawText("Track 1: " + player1.getMetadata().title, waveform1Area, juce::Justification::topLeft);
@@ -191,14 +172,11 @@ void MainComponent::paint(juce::Graphics& g)
         g.drawText("Load Track 1", waveform1Area, juce::Justification::centred);
     }
 
-    // Draw Track 2 Waveform
     if (showWaveform2 && thumbnail2.getTotalLength() > 0.0)
     {
-        // Background for track 2 waveform
         g.setColour(juce::Colours::black.withAlpha(0.5f));
         g.fillRoundedRectangle(waveform2Area.toFloat(), 4.0f);
 
-        // Waveform gradient for track 2
         juce::ColourGradient waveform2Gradient(
             juce::Colours::green.withAlpha(0.8f), (float)waveform2Area.getX(), (float)waveform2Area.getCentreY(),
             juce::Colours::lime.withAlpha(0.8f), (float)waveform2Area.getRight(), (float)waveform2Area.getCentreY(),
@@ -206,7 +184,6 @@ void MainComponent::paint(juce::Graphics& g)
         g.setGradientFill(waveform2Gradient);
         thumbnail2.drawChannel(g, waveform2Area, 0.0, thumbnail2.getTotalLength(), 0, 0.85f);
 
-        // Draw markers for track 2
         auto& markers2 = player2.getMarkers();
         double totalLength2 = player2.getLengthInSeconds();
         for (const auto& marker : markers2)
@@ -219,7 +196,6 @@ void MainComponent::paint(juce::Graphics& g)
             g.fillEllipse(xPos - 3, waveform2Area.getBottom() - 8, 6, 6);
         }
 
-        // Draw current playback cursor for track 2
         if (player2.isPlaying())
         {
             double position = player2.getCurrentPosition();
@@ -229,7 +205,6 @@ void MainComponent::paint(juce::Graphics& g)
             g.drawLine(x, (float)waveform2Area.getY(), x, (float)waveform2Area.getBottom(), 2.0f);
         }
 
-        // Track 2 label
         g.setColour(juce::Colours::white.withAlpha(0.8f));
         g.setFont(12.0f);
         g.drawText("Track 2: " + player2.getMetadata().title, waveform2Area, juce::Justification::topLeft);
@@ -241,7 +216,6 @@ void MainComponent::paint(juce::Graphics& g)
         g.drawText("Load Track 2", waveform2Area, juce::Justification::centred);
     }
 
-    // === Mixing Information ===
     auto mixInfoArea = getLocalBounds().removeFromTop(30).reduced(20, 5);
     g.setColour(juce::Colours::white.withAlpha(0.7f));
     g.setFont(12.0f);
@@ -257,11 +231,11 @@ void MainComponent::paint(juce::Graphics& g)
         mixInfo += "Stopped | ";
 
     mixInfo += "Volumes: T1=" + juce::String(player1.getVolume(), 2) +
-        " T2=" + juce::String(player2.getVolume(), 2);
+        " T2=" + juce::String(player2.getVolume(), 2) +
+        " | Speed: T1=" + juce::String(player1.getSpeed(), 2) + "x T2=" + juce::String(player2.getSpeed(), 2) + "x";
 
     g.drawText(mixInfo, mixInfoArea, juce::Justification::centred);
 
-    // === Tiny Cosmic Dust ===
     g.setColour(juce::Colours::white.withAlpha(0.15f));
     for (int i = 0; i < 400; ++i)
     {
@@ -270,7 +244,6 @@ void MainComponent::paint(juce::Graphics& g)
         g.fillEllipse(x, y, 0.3f, 0.3f);
     }
 
-    // === Galactic Border ===
     juce::ColourGradient borderGradient(
         juce::Colours::indigo.withAlpha(0.7f), 0, 0,
         juce::Colour::fromRGB(100, 60, 150).withAlpha(0.7f), 0, (float)getHeight(),
@@ -278,7 +251,6 @@ void MainComponent::paint(juce::Graphics& g)
     g.setGradientFill(borderGradient);
     g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1.0f), 8.0f, 1.5f);
 
-    // === Instructions ===
     auto instructionsArea = getLocalBounds().removeFromBottom(20).reduced(20, 0);
     g.setColour(juce::Colours::white.withAlpha(0.5f));
     g.setFont(11.0f);
@@ -290,18 +262,15 @@ void MainComponent::resized()
 {
     auto area = getLocalBounds();
 
-    // Reserve space for all UI elements in order from top to bottom
-    area.removeFromTop(40);    // Title bar
-    area.removeFromTop(25);    // Status/playlist info area
-    area.removeFromTop(240);   // Dual waveform display
-    area.removeFromTop(30);    // Mixing information
-    area.removeFromBottom(20); // Instructions at bottom
+    area.removeFromTop(40);
+    area.removeFromTop(25);
+    area.removeFromTop(240);
+    area.removeFromTop(30);
+    area.removeFromBottom(20);
 
-    // The remaining area is for the single player GUI
     playerGUI.setBounds(area.reduced(10, 5));
 }
 
-// GUI Button Actions
 void MainComponent::loadButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
@@ -324,25 +293,20 @@ void MainComponent::loadButtonClicked()
                     playerGUI.setLoopState(player1.isLoopingEnabled());
                     playerGUI.setMuteState(false);
 
-                    // Load waveform for track 1
                     thumbnail1.setSource(new juce::FileInputSource(file));
                     showWaveform1 = true;
 
-                    // Switch to loading track 2 next time
                     currentLoadingTrack = 2;
                 }
                 else
                 {
                     player2.loadFile(file);
-                    // Don't reset playback state for track 2
                     thumbnail2.setSource(new juce::FileInputSource(file));
                     showWaveform2 = true;
 
-                    // Switch back to loading track 1 next time
                     currentLoadingTrack = 1;
                 }
 
-                // Update metadata display
                 updateMetadataDisplay();
                 repaint();
             }
@@ -357,7 +321,6 @@ void MainComponent::loadSecondTrackButtonClicked()
 
 void MainComponent::playButtonClicked()
 {
-    // Start both players if they have files loaded
     if (player1.getLengthInSeconds() > 0)
     {
         if (player1.isPlaying())
@@ -374,7 +337,6 @@ void MainComponent::playButtonClicked()
             player2.play();
     }
 
-    // Update GUI state based on whether any player is playing
     bool anyPlaying = player1.isPlaying() || player2.isPlaying();
     playerGUI.setPlaybackState(anyPlaying);
 }
@@ -395,11 +357,9 @@ void MainComponent::restartButtonClicked()
 
 void MainComponent::loopButtonClicked()
 {
-    // Toggle looping for both players
     bool loop1 = player1.toggleLooping();
     bool loop2 = player2.toggleLooping();
 
-    // Update GUI with track 1's loop state
     playerGUI.setLoopState(loop1);
 }
 
@@ -412,11 +372,16 @@ void MainComponent::volumeChanged(float newVolume)
 {
     if (!isMuted)
     {
-        // Set volume for both players
         player1.setVolume(newVolume);
         player2.setVolume(newVolume);
         previousVolume = newVolume;
     }
+}
+
+void MainComponent::speedChanged(float newSpeed)
+{
+    player1.setSpeed(newSpeed);
+    player2.setSpeed(newSpeed);
 }
 
 void MainComponent::toggleMute()
@@ -457,7 +422,6 @@ void MainComponent::goToEndButtonClicked()
 
 void MainComponent::positionSliderMoved(double newSeconds)
 {
-    // Set position for both players
     player1.setPosition(newSeconds);
     player2.setPosition(newSeconds);
 }
@@ -466,13 +430,11 @@ void MainComponent::timerCallback()
 {
     repaint();
 
-    // Update position display based on the longer track
     double total1 = player1.getLengthInSeconds();
     double current1 = player1.getCurrentPosition();
     double total2 = player2.getLengthInSeconds();
     double current2 = player2.getCurrentPosition();
 
-    // Use the longer track for position display
     double displayTotal = juce::jmax(total1, total2);
     double displayCurrent = juce::jmax(current1, current2);
 
@@ -480,11 +442,9 @@ void MainComponent::timerCallback()
 
     playerGUI.updatePositionDisplay(displayCurrent, displayTotal);
 
-    // Update playback state
     bool anyPlaying = player1.isPlaying() || player2.isPlaying();
     playerGUI.setPlaybackState(anyPlaying);
 
-    // Update marker states (use track 1 for markers)
     playerGUI.setMarkerAState(player1.getMarkerA() >= 0);
     playerGUI.setMarkerBState(player1.getMarkerB() >= 0);
     playerGUI.setSegmentLoopState(player1.isSegmentLooping());
@@ -557,7 +517,6 @@ void MainComponent::segmentLoopButtonClicked()
     }
 }
 
-// Slicing Functionality
 void MainComponent::sliceButtonClicked()
 {
     bool success = player1.createSliceFromMarkers();
@@ -631,7 +590,6 @@ void MainComponent::updateSliceState()
     playerGUI.setSliceState(player1.hasValidSlice());
 }
 
-// New: Update metadata display
 void MainComponent::updateMetadataDisplay()
 {
     auto metadata1 = player1.getMetadata();
@@ -659,7 +617,6 @@ void MainComponent::updateMetadataDisplay()
     playerGUI.setMetadataDisplay(metadataText);
 }
 
-// Track Markers Functionality
 void MainComponent::addMarkerButtonClicked()
 {
     double currentTime = player1.getCurrentPosition();
@@ -682,7 +639,6 @@ void MainComponent::jumpToMarker(int index)
     player1.jumpToMarker(index);
 }
 
-// ListBoxModel implementation for markers
 int MainComponent::getNumRows()
 {
     return player1.getMarkers().size();
@@ -710,7 +666,6 @@ void MainComponent::paintListBoxItem(int rowNumber, juce::Graphics& g,
 
         g.setFont(14.0f);
 
-        // Format time as MM:SS
         int minutes = static_cast<int>(markers[rowNumber].time) / 60;
         int seconds = static_cast<int>(markers[rowNumber].time) % 60;
         juce::String timeString = juce::String::formatted("%02d:%02d", minutes, seconds);
@@ -730,21 +685,17 @@ void MainComponent::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
     if (source == &player1)
     {
-        // Update markers list
         playerGUI.getMarkersList().updateContent();
         playerGUI.getMarkersList().repaint();
 
-        // Update metadata
         updateMetadataDisplay();
     }
     else if (source == &player2)
     {
-        // Update metadata for track 2
         updateMetadataDisplay();
     }
 }
 
-// Playlist functionality
 void MainComponent::loadPlaylistButtonClicked()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
@@ -777,9 +728,9 @@ void MainComponent::nextTrackButtonClicked()
 
 void MainComponent::playlistBoxChanged(int selectedId)
 {
-    if (selectedId > 0) // 0 means no selection
+    if (selectedId > 0)
     {
-        playTrack(selectedId - 1); // Convert to 0-based index
+        playTrack(selectedId - 1);
     }
 }
 
@@ -800,12 +751,10 @@ void MainComponent::loadPlaylist(const juce::File& playlistFile)
             juce::File trackFile;
             if (line.startsWithChar('/') || line.containsChar(':'))
             {
-                // Absolute path
                 trackFile = juce::File(line);
             }
             else
             {
-                // Relative to playlist file
                 trackFile = playlistFile.getSiblingFile(line);
             }
 
@@ -852,11 +801,9 @@ void MainComponent::playTrack(int index)
     {
         currentPlaylistIndex = index;
 
-        // Load the track into track 1 (main track)
         player1.loadFile(playlist[index]);
         playerGUI.setPlaybackState(false);
 
-        // Load waveform for track 1
         thumbnail1.setSource(new juce::FileInputSource(playlist[index]));
         showWaveform1 = true;
 
@@ -867,13 +814,12 @@ void MainComponent::playTrack(int index)
 
 void MainComponent::updatePlaylistDisplay()
 {
-    // Update the playlist box
     playerGUI.getPlaylistBox().clear();
 
     for (int i = 0; i < playlist.size(); ++i)
     {
         auto trackName = playlist[i].getFileNameWithoutExtension();
-        playerGUI.getPlaylistBox().addItem(trackName, i + 1); // ID is index + 1
+        playerGUI.getPlaylistBox().addItem(trackName, i + 1);
     }
 
     if (currentPlaylistIndex >= 0 && currentPlaylistIndex < playlist.size())

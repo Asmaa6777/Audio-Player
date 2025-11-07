@@ -38,35 +38,29 @@ namespace BinaryData
     extern const char*   unmute_jpg;
     const int            unmute_jpgSize = 2089;
 
-    extern const char*   AudioGUI_cpp;
-    const int            AudioGUI_cppSize = 276;
-
-    extern const char*   AudioGUI_h;
-    const int            AudioGUI_hSize = 925;
-
     extern const char*   Main_cpp;
-    const int            Main_cppSize = 1186;
+    const int            Main_cppSize = 1637;
 
     extern const char*   MainComponent_cpp;
-    const int            MainComponent_cppSize = 5433;
+    const int            MainComponent_cppSize = 27951;
 
     extern const char*   MainComponent_h;
-    const int            MainComponent_hSize = 1728;
+    const int            MainComponent_hSize = 3619;
 
     extern const char*   PlayerAudio_cpp;
-    const int            PlayerAudio_cppSize = 4441;
+    const int            PlayerAudio_cppSize = 9426;
 
     extern const char*   PlayerAudio_h;
-    const int            PlayerAudio_hSize = 1895;
+    const int            PlayerAudio_hSize = 3699;
 
     extern const char*   PlayerGUI_cpp;
-    const int            PlayerGUI_cppSize = 14177;
+    const int            PlayerGUI_cppSize = 20152;
 
     extern const char*   PlayerGUI_h;
-    const int            PlayerGUI_hSize = 3095;
+    const int            PlayerGUI_hSize = 4929;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 19;
+    const int namedResourceListSize = 17;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

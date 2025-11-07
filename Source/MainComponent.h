@@ -13,16 +13,13 @@ public:
     MainComponent();
     ~MainComponent() override;
 
-    // Audio callbacks
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
-    // GUI
     void paint(juce::Graphics&) override;
     void resized() override;
 
-    // PlayerGUI::Listener implementations
     void loadButtonClicked() override;
     void loadSecondTrackButtonClicked() override;
     void playButtonClicked() override;
@@ -31,6 +28,7 @@ public:
     void loopButtonClicked() override;
     void muteButtonClicked() override;
     void volumeChanged(float newVolume) override;
+    void speedChanged(float newSpeed) override;
     void forwardButtonClicked() override;
     void backwardButtonClicked() override;
     void goToEndButtonClicked() override;
@@ -42,12 +40,10 @@ public:
     void sliceButtonClicked() override;
     void saveSliceButtonClicked() override;
 
-    // New marker functions
     void addMarkerButtonClicked() override;
     void deleteMarkerButtonClicked() override;
     void jumpToMarker(int index) override;
 
-    // Playlist functions
     void loadPlaylistButtonClicked() override;
     void prevTrackButtonClicked() override;
     void nextTrackButtonClicked() override;
@@ -55,17 +51,14 @@ public:
 
     void timerCallback() override;
 
-    // ListBoxModel implementation for markers
     int getNumRows() override;
     void paintListBoxItem(int rowNumber, juce::Graphics& g,
         int width, int height, bool rowIsSelected) override;
     void listBoxItemClicked(int row, const juce::MouseEvent& event) override;
 
-    // ChangeListener for marker updates
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
 private:
-    // Two players for mixing
     PlayerAudio player1;
     PlayerAudio player2;
     PlayerGUI playerGUI;
@@ -90,10 +83,8 @@ private:
     void updateSliceState();
     void updateMetadataDisplay();
 
-    // Track which file we're loading (1 or 2)
     int currentLoadingTrack = 1;
 
-    // Playlist support
     juce::Array<juce::File> playlist;
     int currentPlaylistIndex = -1;
     bool playlistLoaded = false;
