@@ -1,122 +1,119 @@
-🪐 JUCE Dual Audio Player with Mixer and Audio Slicer
-🎧 Overview
+# 🪐 JUCE Dual Audio Player with Mixer and Audio Slicer
 
-This project is a modern dual audio player built with JUCE, featuring two synchronized players, a mixer, and a unique audio slicer innovation.
-It provides an immersive experience for playing, looping, and mixing tracks — ideal for creative experimentation, music production, or DJ-style control.
+## 🎧 Overview
 
-🚀 Features
-🎵 1. Dual Audio Players
+A modern **dual audio player** built with the JUCE framework, featuring **two synchronized players**, a **real-time mixer**, and an **innovative audio slicer**.
+Designed for creative experimentation, music production, and DJ-style control, it delivers a clean interface and powerful playback tools.
 
-Two independent PlayerGUI components.
+---
 
-Each can load, play, loop, mute, and seek within an audio file.
+## 🚀 Features
 
-Displays waveform previews for both players.
+### 🎵 1. Dual Audio Players
 
-Only one player outputs audio at a time (for clarity), unless mixing mode is enabled.
+* Two independent **PlayerGUI** components.
+* Each can **load, play, stop, loop, mute,** and **seek** within an audio file.
+* Displays **waveform previews** for both players.
+* Only one player outputs audio at a time for clarity (unless **mixing mode** is enabled).
 
-🎚️ 2. Mixer (New Feature)
+### 🎚️ 2. Mixer (New Feature)
 
-Blend two tracks by adjusting each player’s volume.
+* **Blend** two tracks by adjusting each player’s volume.
+* Seamlessly mix outputs in real time.
+* Independent **mute** and **loop** control per player.
+* Enables creative **transitions** and **overlays** between tracks.
 
-Mix their outputs seamlessly in real time.
+### ✂️ 3. Innovation: Audio Slicer
 
-Independent mute and loop control for each player.
+* Define **A–B markers** to slice audio segments.
+* **Extract or loop** specific sections for creative remixing.
+* Ideal for making **short samples**, **loops**, or **beat snippets**.
+* Future versions will support **exporting slices** as standalone audio files.
 
-Enables users to create simple transitions or overlay tracks creatively.
+---
 
-✂️ 3. Innovation: Audio Slicer
+## 🧩 Core Components
 
-A creative feature that lets you slice audio segments.
+| File                       | Description                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------ |
+| **MainComponent.h / .cpp** | Manages both players, the mixer logic, and waveform rendering.                 |
+| **PlayerAudio.h / .cpp**   | Handles audio transport, playback, looping, volume, and markers.               |
+| **PlayerGUI.h / .cpp**     | Provides the user interface (buttons, sliders, waveform, and marker controls). |
+| **assets/icons/**          | Contains UI button icons (play, stop, loop, etc.).                             |
+| **BinaryData**             | Compiled image and icon resources embedded in the app.                         |
 
-Define start and end markers (A–B) and extract or loop just that region.
+---
 
-Useful for creating short samples, looping beats, or preparing remix snippets.
+## 🖥️ GUI Overview
 
-Can preview slices and (in future versions) export them as standalone clips.
+* Gradient background with a **space-themed color palette** 🌌
+* Each player includes:
 
-🧩 Core Components
-File	Description
-MainComponent.h / .cpp	Manages both players, mixing logic, and waveform rendering.
-PlayerAudio.h / .cpp	Handles audio transport, playback, volume, and markers.
-PlayerGUI.h / .cpp	Manages all UI controls: play, pause, loop, markers, sliders, etc.
-assets/icons/	Contains all icons for the UI buttons (play, stop, loop, etc).
-BinaryData	Compiled image and icon resources included in the app.
-🖥️ GUI Overview
+  * **Load / Play / Stop / Loop / Mute / Skip** buttons
+  * **Waveform preview**
+  * **Volume and position sliders**
+  * **A–B marker controls**
+* A **central mixer panel** (coming soon) for smooth crossfades between Player 1 and Player 2.
 
-Gradient background with a space-themed color palette 🌌
+---
 
-Each player includes:
+## 🧠 How It Works
 
-Load / Play / Stop / Loop / Mute / Skip buttons
+### 🎧 JUCE Audio Engine
 
-Waveform preview
+* Uses `AudioTransportSource` for each player.
+* Handles **real-time playback**, **looping**, and **position tracking**.
 
-Volume and position sliders
+### 🎚️ Mixing Logic
 
-A–B marker controls
+* Combines two `AudioSourceChannelInfo` streams in the mixer.
+* Each player’s **volume** determines its contribution to the final output buffer.
 
-Central mixer control panel (to be added) for fading between Player 1 and Player 2.
+### ✂️ Slicing System
 
-🧠 How It Works
-🎧 JUCE Audio Engine
+* Users set **markers A and B** to define a loop segment.
+* The segment can be **looped**, **previewed**, or (in future versions) **exported**.
 
-Uses AudioTransportSource for each player.
+---
 
-Handles real-time playback, looping, and position tracking.
+## 🛠️ Build Instructions
 
-🎚️ Mixing Logic
+### Prerequisites
 
-Two AudioSourceChannelInfo streams combined in the mixer.
+* **JUCE Framework (v7 or later)**
+* **C++17** compatible compiler
+* **Visual Studio**, **CLion**, or **Xcode**
 
-Each player’s volume determines its contribution to the final output buffer.
+### Build Steps
 
-✂️ Slicing System
+1. Open the `.jucer` project in **Projucer**.
+2. Configure your preferred exporter (e.g., Visual Studio, Xcode).
+3. Click **“Save and Open in IDE.”**
+4. Build and run the project.
 
-Uses user-defined markers (A & B) to define loop segments.
+#### Alternatively, using CMake:
 
-Future versions will support exporting slices as new audio files.
-
-🛠️ Build Instructions
-Prerequisites
-
-JUCE Framework
- (version 7 or later)
-
-C++17 compatible compiler
-
-Visual Studio / CLion / Xcode
-
-Build Steps
-
-Open the .jucer project in Projucer.
-
-Configure the exporter for your IDE (Visual Studio, Xcode, etc).
-
-Click “Save and Open in IDE.”
-
-Build and run the project.
-
-Alternatively, build using CMake:
-
-cmake -Bbuild
+```bash
+cmake -B build
 cmake --build build
+```
 
-🔮 Future Improvements
+---
 
-🎚️ Dedicated Mixer Panel UI with smooth crossfades
+## 🔮 Future Improvements
 
-🎛️ EQ and Filter Controls per player
+* 🎚️ Dedicated mixer panel with smooth crossfades
+* 🎛️ Per-player EQ and filter controls
+* 💾 Export sliced clips as new audio files
+* 🌈 Dynamic visualizer synchronized with playback
+* 🎹 MIDI controller support for live performance
 
-💾 Export sliced clips as new audio files
+---
 
-🌈 Dynamic visualizer synchronized with playback
+## 👩‍💻Team
 
-🎹 MIDI controller support for live performance
+**Asmaa Faroug**
+**Arwa Bashier**
+**Mariam Sherif**
+**Mariam Ahmed**
 
-👩‍💻 Authors
-
-Asmaa Faroug
-Arwa Bashier
-Mariam Sherif
-Mariam Ahmed
