@@ -94,6 +94,7 @@ private:
 
     juce::File currentFile;
 
+
     juce::AudioBuffer<float> audioSlice;
     bool sliceReady = false;
     double sliceStart = 0.0;

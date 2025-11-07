@@ -332,6 +332,7 @@ void PlayerAudio::extractMetadata(juce::AudioFormatReader* reader, const juce::F
         metadata.title = audioFile.getFileNameWithoutExtension();
 }
 
+
 bool PlayerAudio::isValidAudioFile(const juce::File& file) const
 {
     return file.existsAsFile() &&

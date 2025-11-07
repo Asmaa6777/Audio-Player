@@ -443,6 +443,7 @@ void PlayerGUI::setSliceState(bool hasSlice)
     }
 }
 
+
 void PlayerGUI::setMetadataDisplay(const juce::String& metadataText)
 {
     metadataLabel.setText(metadataText, juce::dontSendNotification);

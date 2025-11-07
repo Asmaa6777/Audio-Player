@@ -93,7 +93,8 @@ private:
     void playNextInPlaylist();
     void playPreviousInPlaylist();
     void playTrack(int index);
-    void updatePlaylistDisplay();
+    void updatePlaylistDisplay(); 
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
