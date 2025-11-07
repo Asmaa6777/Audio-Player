@@ -109,6 +109,71 @@ cmake --build build
 *  MIDI controller support for live performance
 
 ---
++---------------------------------------------------+
+|                    MainComponent                  |
++---------------------------------------------------+
+| - player1: PlayerAudio                            |
+| - player2: PlayerAudio                            |
+| - player1GUI: PlayerGUI                           |
+| - player2GUI: PlayerGUI                           |
+| - mixer: Mixer                                    |
+|---------------------------------------------------|
+| + prepareToPlay(samplesPerBlock, sampleRate)      |
+| + getNextAudioBlock(bufferToFill)                 |
+| + releaseResources()                              |
+| + paint(g)                                        |
+| + resized()                                       |
++---------------------------------------------------+
+                |                 |
+                |                 |
+                v                 v
+       +-----------------+   +-----------------+
+       |   PlayerGUI     |   |   PlayerAudio   |
+       +-----------------+   +-----------------+
+       | - transport: PlayerAudio*              |
+       | - playButton, stopButton, loopButton   |
+       | - muteButton, loadButton               |
+       | - volumeSlider, positionSlider         |
+       | - waveformDisplay                      |
+       | - markerA, markerB                     |
+       |----------------------------------------|
+       | + setTransportSource(audio: PlayerAudio)|
+       | + buttonClicked(button)                |
+       | + sliderValueChanged(slider)           |
+       | + paint(g)                             |
+       | + resized()                            |
+       +-----------------+                      |
+                               +-------------------------------------+
+                               | - audioFormatReaderSource: AudioFormatReaderSource |
+                               | - transportSource: AudioTransportSource            |
+                               | - volume: float                                   |
+                               | - isMuted: bool                                   |
+                               | - loopEnabled: bool                               |
+                               | - markerA: double                                 |
+                               | - markerB: double                                 |
+                               |-------------------------------------|
+                               | + loadURL(audioURL)                |
+                               | + start()                          |
+                               | + stop()                           |
+                               | + setLooping(bool)                 |
+                               | + setVolume(float)                 |
+                               | + setMarkers(a, b)                 |
+                               | + getNextAudioBlock(bufferToFill)  |
+                               | + getCurrentPosition()             |
+                               | + prepareToPlay() / releaseResources() |
+                               +-------------------------------------+
+
+                    +--------------------+
+                    |       Mixer        |
+                    +--------------------+
+                    | - player1: PlayerAudio*       |
+                    | - player2: PlayerAudio*       |
+                    | - crossfade: float            |
+                    |-------------------------------|
+                    | + setCrossfade(float)         |
+                    | + getNextAudioBlock(buffer)   |
+                    +--------------------+
+
 
 ## Team👩‍💻
 
