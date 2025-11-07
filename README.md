@@ -111,6 +111,7 @@ cmake --build build
 ---
 
 
+
 +-----------------------------------------------------------+
 |                      MainComponent                        |
 +-----------------------------------------------------------+
@@ -132,30 +133,30 @@ cmake --build build
 +---------------------------+     +---------------------------+
 |         PlayerGUI         |     |        PlayerAudio        |
 +---------------------------+     +---------------------------+
-| - transport: PlayerAudio*  |    | - audioFormatReaderSource: AudioFormatReaderSource |
-| - playButton               |    | - transportSource: AudioTransportSource            |
+| - transport: PlayerAudio*  |    | - audioFormatReaderSource: AudioFormatReaderSource|
+| - playButton               |    | - transportSource: AudioTransportSource           |
 | - stopButton               |    | - volume: float                                   |
 | - loopButton               |    | - isMuted: bool                                   |
 | - muteButton               |    | - loopEnabled: bool                               |
 | - loadButton               |    | - markerA: double                                 |
 | - volumeSlider             |    | - markerB: double                                 |
 | - positionSlider           |    +---------------------------------------------------+
-| - waveformDisplay          |    | + loadURL(audioURL)                              |
-| - markerA, markerB         |    | + start()                                        |
-+---------------------------+    | + stop()                                         |
+| - waveformDisplay          |    | + loadURL(audioURL)                             |
+| - markerA, markerB         |    | + start()                                       |
++---------------------------+     | + stop()                                        |
 | + setTransportSource(audio: PlayerAudio)         | + setLooping(loop: bool)       |
 | + buttonClicked(button)                          | + setVolume(vol: float)        |
 | + sliderValueChanged(slider)                     | + setMarkers(a, b)             |
 | + paint(g)                                       | + getNextAudioBlock(buffer)    |
 | + resized()                                      | + getCurrentPosition()         |
-+---------------------------+    | + prepareToPlay() / releaseResources()             |
++---------------------------+    | + prepareToPlay() / releaseResources()           |
                                  +---------------------------------------------------+
                                              ^
                                              |
                                              | uses
                                              |
                                  +---------------------------+
-                                 |           Mixer            |
+                                 |           Mixer           |
                                  +---------------------------+
                                  | - player1: PlayerAudio*   |
                                  | - player2: PlayerAudio*   |
@@ -164,6 +165,7 @@ cmake --build build
                                  | + setCrossfade(float)     |
                                  | + getNextAudioBlock()     |
                                  +---------------------------+
+                                 
 
 
 
