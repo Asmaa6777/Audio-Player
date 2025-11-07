@@ -109,6 +109,8 @@ cmake --build build
 *  MIDI controller support for live performance
 
 ---
+
+
 +-----------------------------------------------------------+
 |                      MainComponent                        |
 +-----------------------------------------------------------+
@@ -162,6 +164,8 @@ cmake --build build
                                  | + setCrossfade(float)     |
                                  | + getNextAudioBlock()     |
                                  +---------------------------+
+
+
 
 
 
