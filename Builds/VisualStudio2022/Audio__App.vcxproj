@@ -2850,7 +2850,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\AudioGUI.h" />
+    <ClInclude Include="..\..\Source\PlaylistComponent.h" />
     <ClInclude Include="..\..\Source\MainComponent.h" />
     <ClInclude Include="..\..\Source\PlayerAudio.h" />
     <ClInclude Include="..\..\Source\PlayerGUI.h" />

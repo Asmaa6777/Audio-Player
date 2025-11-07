@@ -3413,7 +3413,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\AudioGUI.h">
+    <ClInclude Include="..\..\Source\PlaylistComponent.h">
       <Filter>Audio_\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\MainComponent.h">

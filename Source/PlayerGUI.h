@@ -5,7 +5,7 @@ class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
     public juce::Slider::Listener,
     public juce::ChangeListener,
-    public juce::ListBoxModel
+    public juce::ComboBox::Listener
 {
 public:
     class Listener
@@ -13,6 +13,7 @@ public:
     public:
         virtual ~Listener() = default;
         virtual void loadButtonClicked() = 0;
+        virtual void loadSecondTrackButtonClicked() = 0;  // Added this
         virtual void playButtonClicked() = 0;
         virtual void stopButtonClicked() = 0;
         virtual void restartButtonClicked() = 0;
@@ -29,10 +30,15 @@ public:
         virtual void segmentLoopButtonClicked() = 0;
         virtual void sliceButtonClicked() = 0;
         virtual void saveSliceButtonClicked() = 0;
-        // New marker functions
         virtual void addMarkerButtonClicked() = 0;
         virtual void deleteMarkerButtonClicked() = 0;
         virtual void jumpToMarker(int index) = 0;
+
+        // Playlist functions
+        virtual void loadPlaylistButtonClicked() = 0;
+        virtual void prevTrackButtonClicked() = 0;
+        virtual void nextTrackButtonClicked() = 0;
+        virtual void playlistBoxChanged(int selectedId) = 0;
     };
 
     PlayerGUI();
@@ -45,6 +51,7 @@ public:
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
+    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 
     void setListener(Listener* newListener);
 
@@ -57,17 +64,14 @@ public:
     void setMarkerBState(bool isSet);
     void setSegmentLoopState(bool isActive);
 
-    // ListBoxModel implementation
-    int getNumRows() override;
-    void paintListBoxItem(int rowNumber, juce::Graphics& g,
-        int width, int height, bool rowIsSelected) override;
-    void listBoxItemClicked(int row, const juce::MouseEvent& event) override;
-
     // Public access to markers list for MainComponent
     juce::ListBox& getMarkersList() { return markersList; }
 
     // New: Metadata display
     void setMetadataDisplay(const juce::String& metadataText);
+
+    void loadButtonIcons();
+    juce::ComboBox& getPlaylistBox() { return playlistBox; }
 
 private:
     juce::DrawableButton muteButton{ "Mute",     juce::DrawableButton::ImageFitted };
@@ -78,7 +82,8 @@ private:
     juce::DrawableButton goToEndButton{ "GoToEnd",  juce::DrawableButton::ImageFitted };
     juce::DrawableButton loopButton{ "Loop",     juce::DrawableButton::ImageFitted };
 
-    juce::TextButton loadButton{ "Load" };
+    juce::TextButton loadButton{ "Load Track 1" };  // Updated text
+    juce::TextButton loadSecondTrackButton{ "Load Track 2" };  // ADDED THIS
     juce::TextButton stopButton{ "Stop" };
 
     juce::Slider volumeSlider;
@@ -112,7 +117,11 @@ private:
     // New: Metadata display
     juce::Label metadataLabel;
 
-    void loadButtonIcons();
+    juce::TextButton loadPlaylistButton{ "Load Playlist" };
+    juce::TextButton prevTrackButton{ "Prev Track" };
+    juce::TextButton nextTrackButton{ "Next Track" };
+    juce::ComboBox playlistBox; // Dropdown to select tracks
+    juce::Label playlistLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };

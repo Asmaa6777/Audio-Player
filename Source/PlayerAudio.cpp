@@ -12,6 +12,9 @@ PlayerAudio::~PlayerAudio()
 
 void PlayerAudio::loadFile(const juce::File& audioFile)
 {
+    if (!isValidAudioFile(audioFile))
+        return;
+
     if (auto* reader = formatManager.createReaderFor(audioFile))
     {
         transportSource.stop();
@@ -29,21 +32,8 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
         // Clear markers when new file is loaded
         clearAllMarkers();
 
-        // New: Extract metadata
-        metadata = Metadata();
-        metadata.filename = audioFile.getFileName();
-        metadata.duration = reader->lengthInSamples / reader->sampleRate;
-
-        // Try to extract metadata from tags
-        auto& metadataValues = reader->metadataValues;
-        metadata.title = metadataValues.getValue("Title", "");
-        metadata.artist = metadataValues.getValue("Artist", "");
-        metadata.album = metadataValues.getValue("Album", "");
-        metadata.year = metadataValues.getValue("Year", "");
-
-        // If no title metadata, use filename without extension
-        if (metadata.title.isEmpty())
-            metadata.title = audioFile.getFileNameWithoutExtension();
+        // Extract metadata
+        extractMetadata(reader, audioFile);
 
         sendChangeMessage(); // Notify that metadata is updated
     }
@@ -145,7 +135,7 @@ void PlayerAudio::RestoreState(juce::PropertiesFile& props, const juce::String& 
     if (lastFile.isNotEmpty())
     {
         juce::File fileToLoad(lastFile);
-        if (fileToLoad.existsAsFile())
+        if (fileToLoad.existsAsFile() && isValidAudioFile(fileToLoad))
         {
             loadFile(fileToLoad);
             double lastPosition = props.getDoubleValue(keyPrefix + "_lastPosition", 0.0);
@@ -320,4 +310,31 @@ juce::String PlayerAudio::getMarkerInfo(int index) const {
         return markers[index].name + " (" + timeString + ")";
     }
     return "";
+}
+
+// Private Helper Methods
+void PlayerAudio::extractMetadata(juce::AudioFormatReader* reader, const juce::File& audioFile)
+{
+    metadata = Metadata();
+    metadata.filename = audioFile.getFileName();
+    metadata.duration = reader->lengthInSamples / reader->sampleRate;
+
+    // Try to extract metadata from tags
+    auto& metadataValues = reader->metadataValues;
+    metadata.title = metadataValues.getValue("Title", "");
+    metadata.artist = metadataValues.getValue("Artist", "");
+    metadata.album = metadataValues.getValue("Album", "");
+    metadata.year = metadataValues.getValue("Year", "");
+
+    // If no title metadata, use filename without extension
+    if (metadata.title.isEmpty())
+        metadata.title = audioFile.getFileNameWithoutExtension();
+}
+
+bool PlayerAudio::isValidAudioFile(const juce::File& file) const
+{
+    return file.existsAsFile() &&
+        (file.hasFileExtension("wav") || file.hasFileExtension("mp3") ||
+            file.hasFileExtension("aiff") || file.hasFileExtension("flac") ||
+            file.hasFileExtension("aif"));
 }

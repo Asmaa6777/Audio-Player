@@ -9,18 +9,21 @@ public:
     PlayerAudio();
     ~PlayerAudio();
 
+    // Basic audio functionality
     void loadFile(const juce::File& audioFile);
-    void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
-    void releaseResources();
+    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
+    void releaseResources() override;
+
+    // Playback control
     void play();
     void stop();
     void restart();
     bool toggleLooping();
     bool isPlaying() const;
-
     bool isLoopingEnabled() const { return isLooping; }
 
+    // Transport control
     void backward(double seconds);
     void forward(double seconds);
     void setVolume(float newVolume);
@@ -29,9 +32,12 @@ public:
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
     void setPosition(double seconds) { transportSource.setPosition(seconds); }
+
+    // State persistence
     void SaveState(juce::PropertiesFile& props, const juce::String& keyPrefix);
     void RestoreState(juce::PropertiesFile& props, const juce::String& keyPrefix);
 
+    // A-B Segment Looping
     void setMarkerA();
     void setMarkerB();
     void clearMarkers();
@@ -56,6 +62,7 @@ public:
             return time < other.time;
         }
     };
+
     void addMarker(double time, const juce::String& name = "");
     void removeMarker(int index);
     void jumpToMarker(int index);
@@ -63,7 +70,7 @@ public:
     const juce::Array<Marker>& getMarkers() const { return markers; }
     juce::String getMarkerInfo(int index) const;
 
-    // New: Metadata support
+    // Metadata support
     struct Metadata {
         juce::String title;
         juce::String artist;
@@ -71,7 +78,11 @@ public:
         juce::String year;
         juce::String filename;
         double duration;
+
+        // Constructor to initialize values
+        Metadata() : title(""), artist(""), album(""), year(""), filename(""), duration(0.0) {}
     };
+
     Metadata getMetadata() const { return metadata; }
 
 private:
@@ -82,6 +93,7 @@ private:
     bool isLooping = false;
     float currentVolume = 1.0f;
 
+    // A-B markers for segment looping
     double markerA = -1.0;
     double markerB = -1.0;
     bool segmentLooping = false;
@@ -97,6 +109,10 @@ private:
     // Track markers
     juce::Array<Marker> markers;
 
-    // New: Metadata
+    // Metadata
     Metadata metadata;
+
+    // Helper methods
+    void extractMetadata(juce::AudioFormatReader* reader, const juce::File& audioFile);
+    bool isValidAudioFile(const juce::File& file) const;
 };

@@ -16,8 +16,8 @@ PlayerGUI::PlayerGUI()
     metadataLabel.setText("No file loaded", juce::dontSendNotification);
     addAndMakeVisible(metadataLabel);
 
-    // Load and Stop buttons (text buttons)
-    for (auto* button : { &loadButton, &stopButton })
+    // Load and Stop buttons (text buttons) - ADD loadSecondTrackButton HERE
+    for (auto* button : { &loadButton, &loadSecondTrackButton, &stopButton })  // UPDATED THIS LINE
     {
         addAndMakeVisible(button);
         button->addListener(this);
@@ -89,7 +89,6 @@ PlayerGUI::PlayerGUI()
 
     // Markers list
     addAndMakeVisible(markersList);
-    markersList.setModel(this);
     markersList.setRowHeight(25);
     markersList.setColour(juce::ListBox::backgroundColourId, baseColour.withAlpha(0.7f));
     markersList.setColour(juce::ListBox::outlineColourId, borderColour);
@@ -135,6 +134,35 @@ PlayerGUI::PlayerGUI()
     setLoopState(false);
     setPlaybackState(false);
     setMuteState(false);
+
+    // Playlist controls
+    addAndMakeVisible(loadPlaylistButton);
+    loadPlaylistButton.addListener(this);
+    loadPlaylistButton.setColour(juce::TextButton::buttonColourId, accentColour);
+    loadPlaylistButton.setColour(juce::TextButton::buttonOnColourId, activeColour);
+    loadPlaylistButton.setColour(juce::TextButton::textColourOffId, textColour);
+
+    addAndMakeVisible(prevTrackButton);
+    prevTrackButton.addListener(this);
+    prevTrackButton.setColour(juce::TextButton::buttonColourId, accentColour);
+    prevTrackButton.setColour(juce::TextButton::buttonOnColourId, activeColour);
+    prevTrackButton.setColour(juce::TextButton::textColourOffId, textColour);
+
+    addAndMakeVisible(nextTrackButton);
+    nextTrackButton.addListener(this);
+    nextTrackButton.setColour(juce::TextButton::buttonColourId, accentColour);
+    nextTrackButton.setColour(juce::TextButton::buttonOnColourId, activeColour);
+    nextTrackButton.setColour(juce::TextButton::textColourOffId, textColour);
+
+    addAndMakeVisible(playlistBox);
+    playlistBox.addListener(this);
+    playlistBox.setColour(juce::ComboBox::backgroundColourId, baseColour);
+    playlistBox.setColour(juce::ComboBox::textColourId, textColour);
+    playlistBox.setColour(juce::ComboBox::arrowColourId, textColour);
+
+    playlistLabel.setText("Playlist:", juce::dontSendNotification);
+    playlistLabel.setColour(juce::Label::textColourId, textColour);
+    addAndMakeVisible(playlistLabel);
 }
 
 PlayerGUI::~PlayerGUI() = default;
@@ -144,13 +172,26 @@ void PlayerGUI::resized()
     auto area = getLocalBounds();
     int margin = 8;
 
-    // === 0. Metadata Display (New) ===
+    // === 0. Metadata Display ===
     auto metadataRow = area.removeFromTop(25);
     metadataLabel.setBounds(metadataRow.reduced(5, 2));
 
-    // === 1. Main Transport Buttons (Top Row) ===
+    // === 0.5. Playlist Controls ===
+    auto playlistRow = area.removeFromTop(30);
+    playlistRow.reduce(margin, 0);
+
+    int playlistButtonWidth = 90;
+    int playlistComboWidth = 150;
+
+    loadPlaylistButton.setBounds(playlistRow.removeFromLeft(playlistButtonWidth).reduced(2));
+    prevTrackButton.setBounds(playlistRow.removeFromLeft(40).reduced(2));
+    nextTrackButton.setBounds(playlistRow.removeFromLeft(40).reduced(2));
+
+    playlistLabel.setBounds(playlistRow.removeFromLeft(60).reduced(2));
+    playlistBox.setBounds(playlistRow.reduced(2));
+
+    // === 1. Main Transport Buttons ===
     auto topRow = area.removeFromTop(70);
-    topRow.reduce(margin, 5);
 
     int buttonWidth = 65;
     int buttonHeight = 65;
@@ -164,6 +205,7 @@ void PlayerGUI::resized()
     int y = topRow.getY() + 2;
 
     loadButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
+    loadSecondTrackButton.setBounds(x, y, buttonWidth, buttonHeight); x += buttonWidth + spacing;
     muteButton.setBounds(x, y, buttonWidth, buttonHeight);       x += buttonWidth + spacing;
     restartButton.setBounds(x, y, buttonWidth, buttonHeight);    x += buttonWidth + spacing;
     backwardButton.setBounds(x, y, buttonWidth, buttonHeight);   x += buttonWidth + spacing;
@@ -252,6 +294,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     if (!listener) return;
 
     if (button == &loadButton)     listener->loadButtonClicked();
+    else if (button == &loadSecondTrackButton) listener->loadSecondTrackButtonClicked();  // ADDED THIS
     else if (button == &playButton)     listener->playButtonClicked();
     else if (button == &stopButton)     listener->stopButtonClicked();
     else if (button == &restartButton)  listener->restartButtonClicked();
@@ -268,6 +311,9 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &saveSliceButton) listener->saveSliceButtonClicked();
     else if (button == &addMarkerButton) listener->addMarkerButtonClicked();
     else if (button == &deleteMarkerButton) listener->deleteMarkerButtonClicked();
+    else if (button == &loadPlaylistButton) listener->loadPlaylistButtonClicked();
+    else if (button == &prevTrackButton) listener->prevTrackButtonClicked();
+    else if (button == &nextTrackButton) listener->nextTrackButtonClicked();
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -406,21 +452,10 @@ void PlayerGUI::setMetadataDisplay(const juce::String& metadataText)
     metadataLabel.setText(metadataText, juce::dontSendNotification);
 }
 
-// ListBoxModel implementation
-int PlayerGUI::getNumRows()
+void PlayerGUI::comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged)
 {
-    // This will be implemented in MainComponent
-    return 0;
-}
-
-void PlayerGUI::paintListBoxItem(int rowNumber, juce::Graphics& g,
-    int width, int height, bool rowIsSelected)
-{
-    // This will be implemented in MainComponent
-}
-
-void PlayerGUI::listBoxItemClicked(int row, const juce::MouseEvent& event)
-{
-    if (listener)
-        listener->jumpToMarker(row);
+    if (comboBoxThatHasChanged == &playlistBox && listener)
+    {
+        listener->playlistBoxChanged(playlistBox.getSelectedId());
+    }
 }
