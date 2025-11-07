@@ -341,6 +341,7 @@ void MainComponent::playButtonClicked()
     playerGUI.setPlaybackState(anyPlaying);
 }
 
+
 void MainComponent::stopButtonClicked()
 {
     player1.stop();

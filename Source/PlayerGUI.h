@@ -113,8 +113,8 @@ private:
     juce::TextButton deleteMarkerButton{ "Delete Marker" };
     juce::ListBox markersList;
 
-
     juce::Label metadataLabel;
+
 
     juce::TextButton loadPlaylistButton{ "Load Playlist" };
     juce::TextButton prevTrackButton{ "Prev Track" };

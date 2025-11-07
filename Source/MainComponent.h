@@ -40,6 +40,7 @@ public:
     void sliceButtonClicked() override;
     void saveSliceButtonClicked() override;
 
+
     void addMarkerButtonClicked() override;
     void deleteMarkerButtonClicked() override;
     void jumpToMarker(int index) override;

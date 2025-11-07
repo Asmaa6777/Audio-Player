@@ -15,6 +15,7 @@ PlayerGUI::PlayerGUI()
     metadataLabel.setText("No file loaded", juce::dontSendNotification);
     addAndMakeVisible(metadataLabel);
 
+
     for (auto* button : { &loadButton, &loadSecondTrackButton, &stopButton })
     {
         addAndMakeVisible(button);
@@ -24,6 +25,7 @@ PlayerGUI::PlayerGUI()
         button->setColour(juce::TextButton::textColourOffId, textColour);
         button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
     }
+
 
     for (auto* button : { &muteButton, &restartButton, &backwardButton, &playButton,
                          &forwardButton, &goToEndButton, &loopButton })
